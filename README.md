@@ -15,10 +15,6 @@ dnf install <package-name>
 - **[SwayOSD](https://github.com/ErikReider/SwayOSD)** [(spec)](swayosd/swayosd.spec) - GTK-based on-screen display for keyboard shortcuts, volume, and brightness in Wayland compositors.
 - **[Walker](https://github.com/abenz1267/walker)** [(spec)](walker/walker.spec) - Fast, customizable application launcher built with GTK4 and Rust for Wayland.
 
-## Building Locally
-
-See [CLAUDE.md](CLAUDE.md) for development environment setup and build instructions.
-
 ## License
 
 GPL-3.0
