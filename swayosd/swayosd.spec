@@ -10,8 +10,6 @@ URL:            https://github.com/ErikReider/SwayOSD
 Source0:        %{url}/archive/v%{version}/%{origname}-%{version}.tar.gz
 Source1:        %{name}-%{version}-vendor.tar.xz
 Source2:        swayosd.sysusers
-# Makefile to generate vendor tarball
-Source3:        Makefile
 
 BuildRequires:  rust
 BuildRequires:  cargo
@@ -63,7 +61,7 @@ brightness, caps-lock state, and other keyboard shortcuts in Wayland compositors
 rm -f %{buildroot}/usr/share/licenses/swayosd/LICENSE
 
 %pre
-%sysusers_create_compat %{SOURCE1}
+%sysusers_create_compat %{SOURCE2}
 
 %files
 %license LICENSE LICENSE.dependencies
