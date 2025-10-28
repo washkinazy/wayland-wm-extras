@@ -188,6 +188,43 @@ vendor-elephant version="2.7.7":
 
     echo "Done! Created ${NAME}-${VERSION}-vendor.tar.xz"
 
+# Vendor Rust dependencies for walker (run inside distrobox)
+vendor-walker version="2.7.1":
+    #!/usr/bin/env bash
+    set -e
+    cd walker
+
+    NAME="walker"
+    VERSION="{{version}}"
+
+    echo "Vendoring dependencies for walker ${VERSION}..."
+
+    # Download source if not present
+    if [ ! -f "${NAME}-${VERSION}.tar.gz" ]; then
+        echo "Downloading ${NAME}-${VERSION}.tar.gz..."
+        curl -L -o "${NAME}-${VERSION}.tar.gz" \
+            "https://github.com/abenz1267/walker/archive/v${VERSION}/${NAME}-${VERSION}.tar.gz"
+    fi
+
+    # Extract source
+    echo "Extracting source..."
+    tar xf "${NAME}-${VERSION}.tar.gz"
+
+    # Vendor dependencies
+    echo "Running cargo vendor..."
+    cd "${NAME}-${VERSION}"
+    cargo vendor
+
+    # Create vendor tarball
+    echo "Creating vendor tarball..."
+    tar Jcvf "../${NAME}-${VERSION}-vendor.tar.xz" vendor/
+
+    # Clean up extracted directory
+    cd ..
+    rm -rf "${NAME}-${VERSION}"
+
+    echo "Done! Created ${NAME}-${VERSION}-vendor.tar.xz"
+
 # Clean mock build results (run inside distrobox)
 clean:
     rm -rf /var/lib/mock/fedora-*/result/*.rpm
