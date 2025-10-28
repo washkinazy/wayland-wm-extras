@@ -75,6 +75,7 @@ temp/
 
 # Package-specific build artifacts
 # SwayOSD
-swayosd/SwayOSD-*                # Extracted source directory (matches SwayOSD-0.2.1/)
-swayosd/SwayOSD-*.tar.gz         # Downloaded source tarball
+swayosd/SwayOSD-*
+swayosd/SwayOSD-*.tar.gz
+**/SwayOSD-*.tar.gz
 # NOTE: swayosd/*-vendor.tar.xz is COMMITTED (not ignored)

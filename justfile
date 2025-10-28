@@ -113,6 +113,44 @@ update package version:
     echo "  3. Add %changelog entry"
     echo "  4. Test with 'just mock {{package}}'"
 
+# Vendor Rust dependencies for swayosd (run inside distrobox)
+vendor-swayosd version="0.2.1":
+    #!/usr/bin/env bash
+    set -e
+    cd swayosd
+
+    NAME="swayosd"
+    GITNAME="SwayOSD"
+    VERSION="{{version}}"
+
+    echo "Vendoring dependencies for SwayOSD ${VERSION}..."
+
+    # Download source if not present
+    if [ ! -f "${GITNAME}-${VERSION}.tar.gz" ]; then
+        echo "Downloading ${GITNAME}-${VERSION}.tar.gz..."
+        curl -L -o "${GITNAME}-${VERSION}.tar.gz" \
+            "https://github.com/ErikReider/SwayOSD/archive/v${VERSION}/${GITNAME}-${VERSION}.tar.gz"
+    fi
+
+    # Extract source
+    echo "Extracting source..."
+    tar xf "${GITNAME}-${VERSION}.tar.gz"
+
+    # Vendor dependencies
+    echo "Running cargo vendor..."
+    cd "${GITNAME}-${VERSION}"
+    cargo vendor
+
+    # Create vendor tarball
+    echo "Creating vendor tarball..."
+    tar Jcvf "../${NAME}-${VERSION}-vendor.tar.xz" vendor/
+
+    # Clean up extracted directory
+    cd ..
+    rm -rf "${GITNAME}-${VERSION}"
+
+    echo "Done! Created ${NAME}-${VERSION}-vendor.tar.xz"
+
 # Clean mock build results (run inside distrobox)
 clean:
     rm -rf /var/lib/mock/fedora-*/result/*.rpm
