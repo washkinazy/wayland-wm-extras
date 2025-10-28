@@ -1,0 +1,81 @@
+# RPM Packaging artifacts
+*.rpm
+*.srpm
+*.tar.bz2
+*.zip
+
+# Source tarballs (but NOT vendor tarballs)
+# Vendor tarballs are committed and match pattern: *-vendor.tar.xz
+*.src.rpm
+
+# RPM build directories
+BUILD/
+BUILDROOT/
+RPMS/
+SOURCES/
+SPECS/
+SRPMS/
+*/BUILD/
+*/BUILDROOT/
+*/RPMS/
+*/SOURCES/
+*/SRPMS/
+
+# Mock build results
+*.log
+/var/lib/mock/
+mock-results/
+results_*/
+
+# rpmbuild artifacts
+*.spec.orig
+*.spec.bak
+*~
+
+# Fedora review artifacts
+review-*/
+*/review-*/
+fedora-review.log
+
+# Downloaded sources (if using spectool)
+*.src.rpm
+
+# Cargo/Rust artifacts (for rust2rpm)
+Cargo.lock
+target/
+*/target/
+
+# Go artifacts (for golang packages)
+go.sum
+vendor/
+*/vendor/
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Linux system files
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+nohup.out
+
+# Distrobox/container artifacts
+.distroboxrc
+
+# Temporary files
+*.tmp
+tmp/
+temp/
+
+# Package-specific build artifacts
+# SwayOSD
+swayosd/SwayOSD-*
+swayosd/SwayOSD-*.tar.gz
+**/SwayOSD-*.tar.gz
+# NOTE: swayosd/*-vendor.tar.xz is COMMITTED (not ignored)
