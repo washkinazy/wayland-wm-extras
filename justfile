@@ -47,12 +47,12 @@ mock package fedora_version="41":
     # Setup rpmbuild directories
     mkdir -p ~/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
 
-    # Download sources using spectool
+    # Download sources using spectool directly to SOURCES
     echo "Downloading sources for {{package}}..."
-    cd {{package}}
-    spectool -g -R {{package}}.spec
+    spectool -g -C ~/rpmbuild/SOURCES {{package}}/{{package}}.spec
 
     # Copy any additional source files (Source1, Source2, etc.) to SOURCES
+    cd {{package}}
     for file in *; do
         if [ -f "$file" ] && [ "$file" != "{{package}}.spec" ] && [ "$file" != "README.md" ]; then
             echo "Copying $file to ~/rpmbuild/SOURCES/"
