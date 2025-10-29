@@ -225,6 +225,44 @@ vendor-walker version="2.7.1":
 
     echo "Done! Created ${NAME}-${VERSION}-vendor.tar.xz"
 
+# Vendor Rust dependencies for regreet (run inside distrobox)
+vendor-regreet version="0.2.0":
+    #!/usr/bin/env bash
+    set -e
+    cd regreet
+
+    NAME="regreet"
+    GITNAME="ReGreet"
+    VERSION="{{version}}"
+
+    echo "Vendoring dependencies for ReGreet ${VERSION}..."
+
+    # Download source if not present
+    if [ ! -f "${GITNAME}-${VERSION}.tar.gz" ]; then
+        echo "Downloading ${GITNAME}-${VERSION}.tar.gz..."
+        curl -L -o "${GITNAME}-${VERSION}.tar.gz" \
+            "https://github.com/rharish101/ReGreet/archive/${VERSION}/${GITNAME}-${VERSION}.tar.gz"
+    fi
+
+    # Extract source
+    echo "Extracting source..."
+    tar xf "${GITNAME}-${VERSION}.tar.gz"
+
+    # Vendor dependencies
+    echo "Running cargo vendor..."
+    cd "${GITNAME}-${VERSION}"
+    cargo vendor
+
+    # Create vendor tarball
+    echo "Creating vendor tarball..."
+    tar Jcvf "../${NAME}-${VERSION}-vendor.tar.xz" vendor/
+
+    # Clean up extracted directory
+    cd ..
+    rm -rf "${GITNAME}-${VERSION}"
+
+    echo "Done! Created ${NAME}-${VERSION}-vendor.tar.xz"
+
 # Clean mock build results (run inside distrobox)
 clean:
     rm -rf /var/lib/mock/fedora-*/result/*.rpm
