@@ -1,13 +1,15 @@
 %global origname SwayOSD
+%global forgeurl https://github.com/ErikReider/SwayOSD
 
 Name:           swayosd
 Version:        0.2.1
+%forgemeta
 Release:        1%{?dist}
 Summary:        A GTK based on screen display for keyboard shortcuts like caps-lock and volume
 
 License:        GPL-3.0-or-later
-URL:            https://github.com/ErikReider/SwayOSD
-Source0:        %{url}/archive/v%{version}/%{origname}-%{version}.tar.gz
+URL:            %{forgeurl}
+Source0:        %{forgesource}
 Source1:        swayosd.sysusers
 
 BuildRequires:  rust

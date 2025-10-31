@@ -25,23 +25,50 @@ echo "Checking source accessibility for: $SPEC_FILE"
 # Extract Source0 URL from spec file
 # Handle both direct URLs and macros
 SOURCE_LINE=$(grep "^Source0:" "$SPEC_FILE" | head -1)
+SOURCE_VALUE=$(echo "$SOURCE_LINE" | awk '{print $2}')
 
-# Extract the URL, handling %{url}, %{forgeurl}, %{version}, etc.
-URL_BASE=$(grep "^URL:" "$SPEC_FILE" | awk '{print $2}')
-FORGEURL=$(grep "^%global forgeurl" "$SPEC_FILE" | awk '{print $3}')
-VERSION=$(grep "^Version:" "$SPEC_FILE" | awk '{print $2}')
+# Check if using %{forgesource} macro
+if echo "$SOURCE_VALUE" | grep -q "%{forgesource}"; then
+    # Extract forgeurl and version to construct the archive URL
+    FORGEURL=$(grep "^%global forgeurl" "$SPEC_FILE" | awk '{print $3}')
+    VERSION=$(grep "^Version:" "$SPEC_FILE" | head -1 | awk '{print $2}')
 
-# Use forgeurl if available, otherwise use URL
-if [ -n "$FORGEURL" ]; then
-    URL_BASE="$FORGEURL"
+    # Handle empty VERSION (might be using %forgemeta or other macros)
+    if [ -z "$VERSION" ] || [ "$VERSION" = "%{version}" ]; then
+        VERSION=$(grep -E "^Version:|%global.*version" "$SPEC_FILE" | grep -v forgemeta | head -1 | awk '{print $NF}')
+    fi
+
+    if [ -z "$FORGEURL" ]; then
+        echo "Error: Using forgesource but no forgeurl found"
+        exit 1
+    fi
+
+    # Construct GitHub archive URL from forgeurl
+    # Example: https://github.com/owner/repo -> https://github.com/owner/repo/archive/v0.2.0.tar.gz
+    SOURCE_URL="${FORGEURL}/archive/v${VERSION}.tar.gz"
+else
+    # Extract the URL, handling %{url}, %{forgeurl}, %{version}, etc.
+    URL_BASE=$(grep "^URL:" "$SPEC_FILE" | awk '{print $2}')
+    FORGEURL=$(grep "^%global forgeurl" "$SPEC_FILE" | awk '{print $3}')
+    VERSION=$(grep "^Version:" "$SPEC_FILE" | head -1 | awk '{print $2}')
+
+    # Handle empty VERSION
+    if [ -z "$VERSION" ] || [ "$VERSION" = "%{version}" ]; then
+        VERSION=$(grep -E "^Version:|%global.*version" "$SPEC_FILE" | grep -v forgemeta | head -1 | awk '{print $NF}')
+    fi
+
+    # Use forgeurl if available, otherwise use URL
+    if [ -n "$FORGEURL" ]; then
+        URL_BASE="$FORGEURL"
+    fi
+
+    # Simple macro substitution for common patterns
+    SOURCE_URL=$(echo "$SOURCE_VALUE" | \
+        sed "s|%{url}|${URL_BASE}|g" | \
+        sed "s|%{forgeurl}|${URL_BASE}|g" | \
+        sed "s|%{version}|${VERSION}|g" | \
+        sed "s|%{name}|${PACKAGE_NAME}|g")
 fi
-
-# Simple macro substitution for common patterns
-SOURCE_URL=$(echo "$SOURCE_LINE" | awk '{print $2}' | \
-    sed "s|%{url}|${URL_BASE}|g" | \
-    sed "s|%{forgeurl}|${URL_BASE}|g" | \
-    sed "s|%{version}|${VERSION}|g" | \
-    sed "s|%{name}|${PACKAGE_NAME}|g")
 
 if [ -z "$SOURCE_URL" ]; then
     echo "Error: Could not extract Source0 URL from spec file"

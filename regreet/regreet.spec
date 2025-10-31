@@ -1,11 +1,14 @@
+%global forgeurl https://github.com/rharish101/ReGreet
+
 Name:           regreet
 Version:        0.2.0
+%forgemeta
 Release:        1%{?dist}
 Summary:        Clean and customizable greeter for greetd
 
 License:        GPL-3.0-or-later
-URL:            https://github.com/rharish101/ReGreet
-Source0:        %{url}/archive/%{version}/ReGreet-%{version}.tar.gz
+URL:            %{forgeurl}
+Source0:        %{forgesource}
 Source1:        regreet.toml
 
 BuildRequires:  rust

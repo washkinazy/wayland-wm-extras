@@ -1,13 +1,15 @@
 %global debug_package %{nil}
+%global forgeurl https://github.com/abenz1267/elephant
 
 Name:           elephant
 Version:        2.7.7
+%forgemeta
 Release:        1%{?dist}
 Summary:        Data provider service for Walker launcher
 
 License:        GPL-3.0-or-later
-URL:            https://github.com/abenz1267/elephant
-Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
+URL:            %{forgeurl}
+Source0:        %{forgesource}
 
 BuildRequires:  golang >= 1.21
 BuildRequires:  git-core
