@@ -2,7 +2,7 @@
 
 Name:           walker
 <<<<<<< HEAD
-Version:        2.7.1
+Version:        2.7.5
 %forgemeta
 =======
 Version:        2.7.5
@@ -74,6 +74,9 @@ install -Dm644 resources/themes/default/*.css %{buildroot}%{_sysconfdir}/xdg/wal
 %{_sysconfdir}/xdg/walker/themes/default/*.css
 
 %changelog
+* Fri Oct 31 2025 Automated Update <noreply@github.com> - 2.7.5-1
+- Update to 2.7.5
+
 * Fri Oct 31 2025 Automated Update <noreply@github.com> - 2.7.5-1
 - Update to 2.7.5
 
