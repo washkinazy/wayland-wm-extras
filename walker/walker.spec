@@ -1,23 +1,14 @@
 %global forgeurl https://github.com/abenz1267/walker
 
 Name:           walker
-<<<<<<< HEAD
 Version:        2.7.5
 %forgemeta
-=======
-Version:        2.7.5
->>>>>>> fee9d37dfeab93d6da8e2625e02bc980efbdc50c
 Release:        1%{?dist}
 Summary:        Fast, customizable Wayland application launcher
 
 License:        GPL-3.0-or-later
-<<<<<<< HEAD
 URL:            %{forgeurl}
 Source0:        %{forgesource}
-=======
-URL:            https://github.com/abenz1267/walker
-Source0:        %{url}/archive/v2.7.5/%{name}-%{version}.tar.gz
->>>>>>> fee9d37dfeab93d6da8e2625e02bc980efbdc50c
 
 BuildRequires:  rust
 BuildRequires:  cargo
@@ -74,12 +65,6 @@ install -Dm644 resources/themes/default/*.css %{buildroot}%{_sysconfdir}/xdg/wal
 %{_sysconfdir}/xdg/walker/themes/default/*.css
 
 %changelog
-* Fri Oct 31 2025 Automated Update <noreply@github.com> - 2.7.5-1
-- Update to 2.7.5
-
-* Fri Oct 31 2025 Automated Update <noreply@github.com> - 2.7.5-1
-- Update to 2.7.5
-
 * Fri Oct 31 2025 Automated Update <noreply@github.com> - 2.7.5-1
 - Update to 2.7.5
 
