@@ -1,11 +1,11 @@
 Name:           walker
-Version:        2.7.1
+Version:        2.7.5
 Release:        1%{?dist}
 Summary:        Fast, customizable Wayland application launcher
 
 License:        GPL-3.0-or-later
 URL:            https://github.com/abenz1267/walker
-Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/v2.7.5/%{name}-%{version}.tar.gz
 
 BuildRequires:  rust
 BuildRequires:  cargo
@@ -62,5 +62,8 @@ install -Dm644 resources/themes/default/*.css %{buildroot}%{_sysconfdir}/xdg/wal
 %{_sysconfdir}/xdg/walker/themes/default/*.css
 
 %changelog
+* Fri Oct 31 2025 Automated Update <noreply@github.com> - 2.7.5-1
+- Update to 2.7.5
+
 * Sun Oct 27 2024 Your Name <your.email@example.com> - 2.7.1-1
 - Initial package for version 2.7.1
