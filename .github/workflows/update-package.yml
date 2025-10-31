@@ -69,7 +69,14 @@ jobs:
             exit 1
           fi
 
-          CURRENT_VERSION=$(rpmspec -q --qf "%{version}\n" "$SPEC_FILE" 2>/dev/null | head -1)
+          # Extract version using grep/awk (rpmspec not available on Ubuntu)
+          CURRENT_VERSION=$(grep "^Version:" "$SPEC_FILE" | head -1 | awk '{print $2}')
+
+          # Handle empty VERSION (might be using %forgemeta or other macros)
+          if [ -z "$CURRENT_VERSION" ] || [ "$CURRENT_VERSION" = "%{version}" ]; then
+              CURRENT_VERSION=$(grep -E "^Version:|%global.*version" "$SPEC_FILE" | grep -v forgemeta | head -1 | awk '{print $NF}')
+          fi
+
           echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
           echo "Current version in spec: $CURRENT_VERSION"
 
