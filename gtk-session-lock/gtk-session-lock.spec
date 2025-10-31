@@ -63,5 +63,8 @@ Development files and headers for building applications using gtk-session-lock.
 * Fri Oct 31 2025 Automated Update <noreply@github.com> - 0.2.0-1
 - Update to 0.2.0
 
+* Fri Oct 31 2025 Automated Update <noreply@github.com> - 0.2.0-1
+- Update to 0.2.0
+
 * Sun Oct 27 2024 Your Name <your.email@example.com> - 0.2.0-2
 - Initial package for version 0.2.0
