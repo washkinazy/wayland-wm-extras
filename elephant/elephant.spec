@@ -65,5 +65,8 @@ install -Dm755 _build/providers/*.so %{buildroot}%{_sysconfdir}/xdg/elephant/pro
 * Fri Oct 31 2025 Automated Update <noreply@github.com> - 2.9.3-1
 - Update to 2.9.3
 
+* Fri Oct 31 2025 Automated Update <noreply@github.com> - 2.9.3-1
+- Update to 2.9.3
+
 * Sun Oct 27 2024 Your Name <your.email@example.com> - 2.7.7-1
 - Initial package for version 2.7.7
