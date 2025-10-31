@@ -37,9 +37,19 @@ echo "Updating Source0 URL..."
 sed -i "s|/archive/[^/]*/|/archive/${NEW_TAG}/|g" "$SPEC_FILE"
 sed -i "s|/archive/refs/tags/[^/]*/|/archive/refs/tags/${NEW_TAG}/|g" "$SPEC_FILE"
 
-# Add changelog entry using rpmdev-bumpspec
+# Add changelog entry manually (rpmdev-bumpspec not available on Ubuntu)
 echo "Adding changelog entry..."
-rpmdev-bumpspec -c "Update to ${NEW_VERSION}" "$SPEC_FILE"
+CHANGELOG_DATE=$(date "+%a %b %d %Y")
+CHANGELOG_ENTRY="* ${CHANGELOG_DATE} Automated Update <noreply@github.com> - ${NEW_VERSION}-1
+- Update to ${NEW_VERSION}
+"
+
+# Find the %changelog section and insert the new entry
+sed -i "/^%changelog/a\\
+${CHANGELOG_ENTRY}" "$SPEC_FILE"
+
+# Also increment Release number back to 1
+sed -i "s/^Release:\s*.*/Release:        1%{?dist}/" "$SPEC_FILE"
 
 echo "Spec file updated successfully"
 

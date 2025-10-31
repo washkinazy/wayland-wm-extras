@@ -23,8 +23,25 @@ fi
 echo "Checking source accessibility for: $SPEC_FILE"
 
 # Extract Source0 URL from spec file
-# Handle both direct URLs and macros like %{url}/archive/...
-SOURCE_URL=$(rpmspec -P "$SPEC_FILE" 2>/dev/null | grep -E "^Source0?:" | head -1 | awk '{print $2}')
+# Handle both direct URLs and macros
+SOURCE_LINE=$(grep "^Source0:" "$SPEC_FILE" | head -1)
+
+# Extract the URL, handling %{url}, %{forgeurl}, %{version}, etc.
+URL_BASE=$(grep "^URL:" "$SPEC_FILE" | awk '{print $2}')
+FORGEURL=$(grep "^%global forgeurl" "$SPEC_FILE" | awk '{print $3}')
+VERSION=$(grep "^Version:" "$SPEC_FILE" | awk '{print $2}')
+
+# Use forgeurl if available, otherwise use URL
+if [ -n "$FORGEURL" ]; then
+    URL_BASE="$FORGEURL"
+fi
+
+# Simple macro substitution for common patterns
+SOURCE_URL=$(echo "$SOURCE_LINE" | awk '{print $2}' | \
+    sed "s|%{url}|${URL_BASE}|g" | \
+    sed "s|%{forgeurl}|${URL_BASE}|g" | \
+    sed "s|%{version}|${VERSION}|g" | \
+    sed "s|%{name}|${PACKAGE_NAME}|g")
 
 if [ -z "$SOURCE_URL" ]; then
     echo "Error: Could not extract Source0 URL from spec file"
