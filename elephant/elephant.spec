@@ -1,13 +1,13 @@
 %global debug_package %{nil}
 
 Name:           elephant
-Version:        2.7.7
+Version:        2.9.3
 Release:        1%{?dist}
 Summary:        Data provider service for Walker launcher
 
 License:        GPL-3.0-or-later
 URL:            https://github.com/abenz1267/elephant
-Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/v2.9.3/%{name}-%{version}.tar.gz
 
 BuildRequires:  golang >= 1.21
 BuildRequires:  git-core
@@ -60,5 +60,8 @@ install -Dm755 _build/providers/*.so %{buildroot}%{_sysconfdir}/xdg/elephant/pro
 %{_sysconfdir}/xdg/elephant/providers/*.so
 
 %changelog
+* Fri Oct 31 2025 Automated Update <noreply@github.com> - 2.9.3-1
+- Update to 2.9.3
+
 * Sun Oct 27 2024 Your Name <your.email@example.com> - 2.7.7-1
 - Initial package for version 2.7.7
