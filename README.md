@@ -15,12 +15,48 @@ A collection of Wayland window manager tools and utilities for Fedora, packaged 
 - **[gtklock-userinfo-module](https://github.com/jovanlanik/gtklock-userinfo-module)** [(spec)](gtklock-userinfo-module/gtklock-userinfo-module.spec) - User info module for gtklock.
 - **[sway-audio-idle-inhibit](https://github.com/ErikReider/SwayAudioIdleInhibit)** [(spec)](sway-audio-idle-inhibit/sway-audio-idle-inhibit.spec) - Prevents idle sleep while audio is playing.
 
+## Installation
+
+```bash
+# Enable the COPR repository
+sudo dnf copr enable washkinazy/wayland-wm-extras
+
+# Install packages
+sudo dnf install walker elephant gtklock
+```
+
 ## Automated Updates
 
 This repository uses GitHub Actions to automatically monitor upstream releases and update packages:
 
 - **Daily monitoring**: Checks for new releases every day at midnight UTC
-- **Automatic PRs**: Creates pull requests with updated spec files when new versions are detected
-- **Auto-merge**: PRs automatically merge once validation passes
-- **Manual updates**: Can trigger updates for individual packages via GitHub Actions UI
+- **Automatic spec updates**: Creates pull requests with updated spec files when new versions are detected
+- **Auto-merge**: PRs merge automatically once validation passes
+- **COPR webhook**: Merged changes trigger automatic rebuilds in COPR
+- **Manual trigger**: Updates can be triggered for individual packages via GitHub Actions UI
+
+## Building
+
+All packages are built automatically in COPR. Builds are triggered:
+- Automatically via webhook when commits are pushed to main
+- When the automated update system merges PRs
+- Manually via COPR web interface
+
+### Local Testing
+
+For local testing in a Fedora distrobox container:
+
+```bash
+# Setup distrobox (see justfile for version-specific setup)
+just setup-41    # or setup-42, setup-43
+
+# Enter container
+just enter 41
+
+# Test build a package
+just mock elephant
+
+# Build all packages for all versions
+just build-matrix
+```
 
