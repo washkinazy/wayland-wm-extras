@@ -80,5 +80,8 @@ install -Dm644 resources/themes/default/*.css %{buildroot}%{_sysconfdir}/xdg/wal
 * Fri Oct 31 2025 Automated Update <noreply@github.com> - 2.7.5-1
 - Update to 2.7.5
 
+* Fri Oct 31 2025 Automated Update <noreply@github.com> - 2.7.5-1
+- Update to 2.7.5
+
 * Sun Oct 27 2024 Your Name <your.email@example.com> - 2.7.1-1
 - Initial package for version 2.7.1
