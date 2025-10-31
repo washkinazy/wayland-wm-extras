@@ -32,10 +32,11 @@ for session selection and user management.
 %autosetup -n ReGreet-%{version}
 
 %build
-%cargo_build
+# Build with online access to fetch dependencies from crates.io
+cargo build --release
 
 %install
-%cargo_install
+install -Dm755 target/release/regreet %{buildroot}%{_bindir}/regreet
 
 # Install configuration file
 install -Dm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/greetd/regreet.toml
