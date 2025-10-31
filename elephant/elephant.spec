@@ -3,7 +3,7 @@
 
 Name:           elephant
 <<<<<<< HEAD
-Version:        2.7.7
+Version:        2.9.3
 %forgemeta
 =======
 Version:        2.9.3
@@ -71,6 +71,9 @@ install -Dm755 _build/providers/*.so %{buildroot}%{_sysconfdir}/xdg/elephant/pro
 %{_sysconfdir}/xdg/elephant/providers/*.so
 
 %changelog
+* Fri Oct 31 2025 Automated Update <noreply@github.com> - 2.9.3-1
+- Update to 2.9.3
+
 * Fri Oct 31 2025 Automated Update <noreply@github.com> - 2.9.3-1
 - Update to 2.9.3
 
