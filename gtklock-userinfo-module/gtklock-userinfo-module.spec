@@ -41,5 +41,8 @@ Supplements:    gtklock%{?_isa}
 * Fri Oct 31 2025 Automated Update <noreply@github.com> - 4.0.1-1
 - Update to 4.0.1
 
+* Fri Oct 31 2025 Automated Update <noreply@github.com> - 4.0.1-1
+- Update to 4.0.1
+
 * Sun Oct 27 2024 Your Name <your.email@example.com> - 4.0.1-1
 - Initial package for version 4.0.1
