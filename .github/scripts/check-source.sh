@@ -44,8 +44,21 @@ if echo "$SOURCE_VALUE" | grep -q "%{forgesource}"; then
     fi
 
     # Construct GitHub archive URL from forgeurl
-    # Example: https://github.com/owner/repo -> https://github.com/owner/repo/archive/v0.2.0.tar.gz
+    # Try with 'v' prefix first (most common), then without, then refs/tags/
     SOURCE_URL="${FORGEURL}/archive/v${VERSION}.tar.gz"
+
+    # Quick check if URL is accessible, try alternative formats if not
+    HTTP_CHECK=$(curl -s -o /dev/null -w "%{http_code}" -L -I "$SOURCE_URL" 2>/dev/null || echo "000")
+    if [ "$HTTP_CHECK" != "200" ] && [ "$HTTP_CHECK" != "302" ]; then
+        # Try without 'v' prefix
+        SOURCE_URL="${FORGEURL}/archive/${VERSION}.tar.gz"
+        HTTP_CHECK=$(curl -s -o /dev/null -w "%{http_code}" -L -I "$SOURCE_URL" 2>/dev/null || echo "000")
+
+        if [ "$HTTP_CHECK" != "200" ] && [ "$HTTP_CHECK" != "302" ]; then
+            # Try refs/tags/ format
+            SOURCE_URL="${FORGEURL}/archive/refs/tags/${VERSION}.tar.gz"
+        fi
+    fi
 else
     # Extract the URL, handling %{url}, %{forgeurl}, %{version}, etc.
     URL_BASE=$(grep "^URL:" "$SPEC_FILE" | awk '{print $2}')

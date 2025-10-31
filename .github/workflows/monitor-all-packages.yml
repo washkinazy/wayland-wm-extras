@@ -41,8 +41,10 @@ jobs:
     name: Update ${{ matrix.package.name }}
     needs: load-config
     # Don't fail-fast: continue updating other packages even if one fails
+    # Run sequentially (max-parallel: 1) to avoid merge conflicts when multiple PRs merge simultaneously
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         package: ${{ fromJson(needs.load-config.outputs.matrix) }}
     uses: ./.github/workflows/update-package.yml
