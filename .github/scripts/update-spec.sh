@@ -40,15 +40,23 @@ sed -i "s|/archive/refs/tags/[^/]*/|/archive/refs/tags/${NEW_TAG}/|g" "$SPEC_FIL
 # Add changelog entry manually (rpmdev-bumpspec not available on Ubuntu)
 echo "Adding changelog entry..."
 CHANGELOG_DATE=$(date "+%a %b %d %Y")
-CHANGELOG_ENTRY="* ${CHANGELOG_DATE} Automated Update <noreply@github.com> - ${NEW_VERSION}-1
-- Update to ${NEW_VERSION}
-"
 
 # Find the %changelog section and insert the new entry
-sed -i "/^%changelog/a\\
-${CHANGELOG_ENTRY}" "$SPEC_FILE"
+# Use a temp file to avoid sed multi-line issues
+TEMP_FILE="${SPEC_FILE}.tmp"
+awk -v date="$CHANGELOG_DATE" -v version="$NEW_VERSION" '
+/^%changelog/ {
+    print $0
+    print "* " date " Automated Update <noreply@github.com> - " version "-1"
+    print "- Update to " version
+    print ""
+    next
+}
+{ print }
+' "$SPEC_FILE" > "$TEMP_FILE"
+mv "$TEMP_FILE" "$SPEC_FILE"
 
-# Also increment Release number back to 1
+# Also reset Release number to 1
 sed -i "s/^Release:\s*.*/Release:        1%{?dist}/" "$SPEC_FILE"
 
 echo "Spec file updated successfully"

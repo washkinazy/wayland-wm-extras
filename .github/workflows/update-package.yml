@@ -160,8 +160,8 @@ jobs:
         if: always()
         run: |
           if [ "${{ steps.compare.outputs.update_needed }}" = "true" ]; then
-            echo "✅ Update PR created for ${{ inputs.package_name }}"
-            echo "🔄 Version: ${{ steps.current.outputs.version }} → ${{ steps.upstream.outputs.version }}"
+            echo "[SUCCESS] Update PR created for ${{ inputs.package_name }}"
+            echo "[INFO] Version: ${{ steps.current.outputs.version }} -> ${{ steps.upstream.outputs.version }}"
           else
-            echo "✓ ${{ inputs.package_name }} is up to date (${{ steps.current.outputs.version }})"
+            echo "[OK] ${{ inputs.package_name }} is up to date (${{ steps.current.outputs.version }})"
           fi

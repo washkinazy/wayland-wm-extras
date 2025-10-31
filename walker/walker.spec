@@ -6,7 +6,6 @@ Summary:        Fast, customizable Wayland application launcher
 License:        GPL-3.0-or-later
 URL:            https://github.com/abenz1267/walker
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
-Source1:        %{name}-%{version}-vendor.tar.xz
 
 BuildRequires:  rust
 BuildRequires:  cargo
@@ -35,14 +34,10 @@ application launching, calculator, file browser, command runner, clipboard
 history, and more.
 
 %prep
-%autosetup -n %{name}-%{version} -p1 -a1
-%cargo_prep -v vendor
+%autosetup -n %{name}-%{version}
 
 %build
 %cargo_build
-%{cargo_license_summary}
-%{cargo_license} > LICENSE.dependencies
-%{cargo_vendor_manifest}
 
 %install
 %cargo_install
@@ -56,7 +51,7 @@ install -Dm644 resources/themes/default/*.xml %{buildroot}%{_sysconfdir}/xdg/wal
 install -Dm644 resources/themes/default/*.css %{buildroot}%{_sysconfdir}/xdg/walker/themes/default/
 
 %files
-%license LICENSE LICENSE.dependencies
+%license LICENSE
 %doc README.md
 %{_bindir}/walker
 %dir %{_sysconfdir}/xdg/walker

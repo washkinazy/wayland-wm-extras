@@ -113,7 +113,10 @@ update package version:
     echo "  3. Add %changelog entry"
     echo "  4. Test with 'just mock {{package}}'"
 
-# Vendor Rust dependencies for swayosd (run inside distrobox)
+# NOTE: Vendoring recipes are deprecated. Packages now fetch dependencies at build time.
+# These recipes are kept for reference but are no longer used in COPR builds.
+
+# Vendor Rust dependencies for swayosd (run inside distrobox) - DEPRECATED
 vendor-swayosd version="0.2.1":
     #!/usr/bin/env bash
     set -e
@@ -151,7 +154,7 @@ vendor-swayosd version="0.2.1":
 
     echo "Done! Created ${NAME}-${VERSION}-vendor.tar.xz"
 
-# Vendor Go dependencies for elephant (run inside distrobox)
+# Vendor Go dependencies for elephant (run inside distrobox) - DEPRECATED
 vendor-elephant version="2.7.7":
     #!/usr/bin/env bash
     set -e
@@ -188,7 +191,7 @@ vendor-elephant version="2.7.7":
 
     echo "Done! Created ${NAME}-${VERSION}-vendor.tar.xz"
 
-# Vendor Rust dependencies for walker (run inside distrobox)
+# Vendor Rust dependencies for walker (run inside distrobox) - DEPRECATED
 vendor-walker version="2.7.1":
     #!/usr/bin/env bash
     set -e
@@ -225,7 +228,7 @@ vendor-walker version="2.7.1":
 
     echo "Done! Created ${NAME}-${VERSION}-vendor.tar.xz"
 
-# Vendor Rust dependencies for regreet (run inside distrobox)
+# Vendor Rust dependencies for regreet (run inside distrobox) - DEPRECATED
 vendor-regreet version="0.2.0":
     #!/usr/bin/env bash
     set -e
