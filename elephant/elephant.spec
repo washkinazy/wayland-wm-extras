@@ -2,14 +2,23 @@
 %global forgeurl https://github.com/abenz1267/elephant
 
 Name:           elephant
+<<<<<<< HEAD
 Version:        2.7.7
 %forgemeta
+=======
+Version:        2.9.3
+>>>>>>> fee9d37dfeab93d6da8e2625e02bc980efbdc50c
 Release:        1%{?dist}
 Summary:        Data provider service for Walker launcher
 
 License:        GPL-3.0-or-later
+<<<<<<< HEAD
 URL:            %{forgeurl}
 Source0:        %{forgesource}
+=======
+URL:            https://github.com/abenz1267/elephant
+Source0:        %{url}/archive/v2.9.3/%{name}-%{version}.tar.gz
+>>>>>>> fee9d37dfeab93d6da8e2625e02bc980efbdc50c
 
 BuildRequires:  golang >= 1.21
 BuildRequires:  git-core
@@ -62,5 +71,8 @@ install -Dm755 _build/providers/*.so %{buildroot}%{_sysconfdir}/xdg/elephant/pro
 %{_sysconfdir}/xdg/elephant/providers/*.so
 
 %changelog
+* Fri Oct 31 2025 Automated Update <noreply@github.com> - 2.9.3-1
+- Update to 2.9.3
+
 * Sun Oct 27 2024 Your Name <your.email@example.com> - 2.7.7-1
 - Initial package for version 2.7.7
