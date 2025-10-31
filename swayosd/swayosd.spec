@@ -77,6 +77,9 @@ rm -f %{buildroot}/usr/share/licenses/swayosd/LICENSE
 %{_datadir}/polkit-1/rules.d/org.erikreider.swayosd.rules
 
 %changelog
+* Fri Oct 31 2025 Automated Update <noreply@github.com> - 0.2.1-1
+- Update to 0.2.1
+
 * Sun Oct 27 2024 Your Name <your.email@example.com> - 0.2.1-1
 - Update to version 0.2.1
 - Latest stable release with bug fixes
