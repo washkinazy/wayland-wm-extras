@@ -6,8 +6,7 @@ Summary:        Clean and customizable greeter for greetd
 License:        GPL-3.0-or-later
 URL:            https://github.com/rharish101/ReGreet
 Source0:        %{url}/archive/%{version}/ReGreet-%{version}.tar.gz
-Source1:        %{name}-%{version}-vendor.tar.xz
-Source2:        regreet.toml
+Source1:        regreet.toml
 
 BuildRequires:  rust
 BuildRequires:  cargo
@@ -26,20 +25,16 @@ for Wayland compositors. It provides a simple login interface with support
 for session selection and user management.
 
 %prep
-%autosetup -n ReGreet-%{version} -p1 -a1
-%cargo_prep -v vendor
+%autosetup -n ReGreet-%{version}
 
 %build
 %cargo_build
-%{cargo_license_summary}
-%{cargo_license} > LICENSE.dependencies
-%{cargo_vendor_manifest}
 
 %install
 %cargo_install
 
 # Install configuration file
-install -Dm644 %{SOURCE2} %{buildroot}%{_sysconfdir}/greetd/regreet.toml
+install -Dm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/greetd/regreet.toml
 
 # Install sample configuration
 install -Dm644 regreet.sample.toml %{buildroot}%{_docdir}/regreet/regreet.sample.toml
@@ -49,7 +44,6 @@ install -Dm644 systemd-tmpfiles.conf %{buildroot}%{_tmpfilesdir}/regreet.conf
 
 %files
 %license LICENSES/*
-%license LICENSE.dependencies
 %doc README.md
 %doc %{_docdir}/regreet/regreet.sample.toml
 %{_bindir}/regreet

@@ -8,8 +8,7 @@ Summary:        A GTK based on screen display for keyboard shortcuts like caps-l
 License:        GPL-3.0-or-later
 URL:            https://github.com/ErikReider/SwayOSD
 Source0:        %{url}/archive/v%{version}/%{origname}-%{version}.tar.gz
-Source1:        %{name}-%{version}-vendor.tar.xz
-Source2:        swayosd.sysusers
+Source1:        swayosd.sysusers
 
 BuildRequires:  rust
 BuildRequires:  cargo
@@ -46,25 +45,21 @@ A GTK based on-screen display (OSD) for common actions like volume changes,
 brightness, caps-lock state, and other keyboard shortcuts in Wayland compositors.
 
 %prep
-%autosetup -n %{origname}-%{version} -p1 -a1
-%cargo_prep -v vendor
+%autosetup -n %{origname}-%{version}
 
 %build
 %meson
 %meson_build
-%{cargo_license_summary}
-%{cargo_license} > LICENSE.dependencies
-%{cargo_vendor_manifest}
 
 %install
 %meson_install
 rm -f %{buildroot}/usr/share/licenses/swayosd/LICENSE
 
 %pre
-%sysusers_create_compat %{SOURCE2}
+%sysusers_create_compat %{SOURCE1}
 
 %files
-%license LICENSE LICENSE.dependencies
+%license LICENSE
 %doc README.md
 %{_bindir}/swayosd-client
 %{_bindir}/swayosd-libinput-backend

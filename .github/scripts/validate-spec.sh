@@ -34,6 +34,13 @@ done
 # Extract key information using grep/sed (more portable than rpmspec)
 NAME=$(grep "^Name:" "$SPEC_FILE" | head -1 | awk '{print $2}')
 VERSION=$(grep "^Version:" "$SPEC_FILE" | head -1 | awk '{print $2}')
+
+# Handle empty VERSION (might be using %forgemeta or other macros)
+if [ -z "$VERSION" ] || [ "$VERSION" = "%{version}" ]; then
+    # Try to find version in other ways
+    VERSION=$(grep -E "^Version:|%global.*version" "$SPEC_FILE" | grep -v forgemeta | head -1 | awk '{print $NF}')
+fi
+
 RELEASE=$(grep "^Release:" "$SPEC_FILE" | head -1 | awk '{print $2}')
 
 echo ""
