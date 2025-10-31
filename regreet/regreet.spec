@@ -54,5 +54,8 @@ install -Dm644 systemd-tmpfiles.conf %{buildroot}%{_tmpfilesdir}/regreet.conf
 %{_tmpfilesdir}/regreet.conf
 
 %changelog
+* Fri Oct 31 2025 Automated Update <noreply@github.com> - 0.2.0-1
+- Update to 0.2.0
+
 * Sun Oct 27 2024 Your Name <your.email@example.com> - 0.2.0-1
 - Initial package for version 0.2.0
