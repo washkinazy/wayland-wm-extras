@@ -40,7 +40,7 @@ history, and more.
 %autosetup -n %{name}-%{version}
 
 %build
-%cargo_prep
+# Build with online access to fetch dependencies from crates.io
 cargo build --release
 
 %install
