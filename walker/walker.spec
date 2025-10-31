@@ -40,10 +40,11 @@ history, and more.
 %autosetup -n %{name}-%{version}
 
 %build
-%cargo_build
+%cargo_prep
+cargo build --release
 
 %install
-%cargo_install
+install -Dm755 target/release/walker %{buildroot}%{_bindir}/walker
 
 # Install configuration files
 install -Dm644 resources/config.toml %{buildroot}%{_sysconfdir}/xdg/walker/config.toml

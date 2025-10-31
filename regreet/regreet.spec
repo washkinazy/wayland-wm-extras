@@ -1,4 +1,5 @@
 %global forgeurl https://github.com/rharish101/ReGreet
+%global tag %{version}
 
 Name:           regreet
 Version:        0.2.0
