@@ -1,0 +1,40 @@
+packages:
+  - name: elephant
+    repo: abenz1267/elephant
+    spec_dir: elephant
+
+  - name: regreet
+    repo: rharish101/ReGreet
+    spec_dir: regreet
+
+  - name: swayosd
+    repo: ErikReider/SwayOSD
+    spec_dir: swayosd
+
+  - name: walker
+    repo: abenz1267/walker
+    spec_dir: walker
+
+  - name: gtk-session-lock
+    repo: Cu3PO42/gtk-session-lock
+    spec_dir: gtk-session-lock
+
+  - name: gtklock
+    repo: jovanlanik/gtklock
+    spec_dir: gtklock
+
+  - name: gtklock-playerctl-module
+    repo: jovanlanik/gtklock-playerctl-module
+    spec_dir: gtklock-playerctl-module
+
+  - name: gtklock-powerbar-module
+    repo: jovanlanik/gtklock-powerbar-module
+    spec_dir: gtklock-powerbar-module
+
+  - name: gtklock-userinfo-module
+    repo: jovanlanik/gtklock-userinfo-module
+    spec_dir: gtklock-userinfo-module
+
+  - name: sway-audio-idle-inhibit
+    repo: ErikReider/SwayAudioIdleInhibit
+    spec_dir: sway-audio-idle-inhibit

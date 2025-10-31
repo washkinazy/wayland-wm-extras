@@ -1,0 +1,67 @@
+name: Update Single Package
+
+on:
+  workflow_dispatch:
+    inputs:
+      package_name:
+        description: 'Select package to update'
+        required: true
+        type: choice
+        options:
+          - elephant
+          - regreet
+          - swayosd
+          - walker
+          - gtk-session-lock
+          - gtklock
+          - gtklock-playerctl-module
+          - gtklock-powerbar-module
+          - gtklock-userinfo-module
+          - sway-audio-idle-inhibit
+
+jobs:
+  get-package-config:
+    name: Get Package Configuration
+    runs-on: ubuntu-latest
+    outputs:
+      upstream_repo: ${{ steps.config.outputs.repo }}
+      spec_dir: ${{ steps.config.outputs.spec_dir }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/bin/yq
+
+      - name: Read package configuration
+        id: config
+        run: |
+          # Find the package in packages.yml and extract its configuration
+          REPO=$(yq eval ".packages[] | select(.name == \"${{ inputs.package_name }}\") | .repo" packages.yml)
+          SPEC_DIR=$(yq eval ".packages[] | select(.name == \"${{ inputs.package_name }}\") | .spec_dir" packages.yml)
+
+          if [ -z "$REPO" ] || [ "$REPO" = "null" ]; then
+            echo "Error: Package ${{ inputs.package_name }} not found in packages.yml"
+            exit 1
+          fi
+
+          echo "repo=$REPO" >> $GITHUB_OUTPUT
+          echo "spec_dir=$SPEC_DIR" >> $GITHUB_OUTPUT
+
+          echo "Package configuration:"
+          echo "  Name: ${{ inputs.package_name }}"
+          echo "  Repo: $REPO"
+          echo "  Spec Dir: $SPEC_DIR"
+
+  update-package:
+    name: Update ${{ inputs.package_name }}
+    needs: get-package-config
+    uses: ./.github/workflows/update-package.yml
+    with:
+      package_name: ${{ inputs.package_name }}
+      upstream_repo: ${{ needs.get-package-config.outputs.upstream_repo }}
+      spec_dir: ${{ needs.get-package-config.outputs.spec_dir }}
+    secrets:
+      PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
