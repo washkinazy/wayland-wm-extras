@@ -3,7 +3,7 @@
 Name:           gtk-session-lock
 Version:        0.2.0
 %forgemeta
-Release:        2%{?dist}
+Release:        1%{?dist}
 Summary:        Library to create screen lockers for Wayland using ext-session-lock
 
 License:        GPL-3.0-or-later
@@ -57,5 +57,8 @@ Development files and headers for building applications using gtk-session-lock.
 %{_datadir}/vala/vapi/gtk-session-lock-0.vapi
 
 %changelog
+* Fri Oct 31 2025 Automated Update <noreply@github.com> - 0.2.0-1
+- Update to 0.2.0
+
 * Sun Oct 27 2024 Your Name <your.email@example.com> - 0.2.0-2
 - Initial package for version 0.2.0
