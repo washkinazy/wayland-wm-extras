@@ -1,11 +1,14 @@
+%global forgeurl https://github.com/abenz1267/walker
+
 Name:           walker
 Version:        2.7.1
+%forgemeta
 Release:        1%{?dist}
 Summary:        Fast, customizable Wayland application launcher
 
 License:        GPL-3.0-or-later
-URL:            https://github.com/abenz1267/walker
-Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
+URL:            %{forgeurl}
+Source0:        %{forgesource}
 
 BuildRequires:  rust
 BuildRequires:  cargo
