@@ -154,8 +154,32 @@ jobs:
         run: |
           # Wait a moment for PR to be fully created
           sleep 2
-          # Merge directly since validation already passed
-          gh pr merge ${{ steps.cpr.outputs.pull-request-number }} --squash --delete-branch --admin
+
+          # Retry merge up to 5 times with exponential backoff to handle concurrent PR merges
+          MAX_RETRIES=5
+          RETRY_COUNT=0
+          MERGED=false
+
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ] && [ "$MERGED" = "false" ]; do
+            if gh pr merge ${{ steps.cpr.outputs.pull-request-number }} --squash --delete-branch --admin; then
+              MERGED=true
+              echo "PR merged successfully"
+            else
+              RETRY_COUNT=$((RETRY_COUNT + 1))
+              if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                WAIT_TIME=$((2 ** RETRY_COUNT))
+                echo "Merge failed, retrying in ${WAIT_TIME}s (attempt $((RETRY_COUNT + 1))/$MAX_RETRIES)..."
+                sleep $WAIT_TIME
+
+                # Update branch before retry
+                git fetch origin main
+                git -C /tmp checkout auto-update/${{ inputs.package_name }}-${{ steps.upstream.outputs.version }} 2>/dev/null || true
+              else
+                echo "Failed to merge after $MAX_RETRIES attempts"
+                exit 1
+              fi
+            fi
+          done
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
 
