@@ -1,0 +1,51 @@
+name: Monitor All Packages
+
+on:
+  schedule:
+    # Run daily at midnight UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    # Allow manual triggering
+
+jobs:
+  load-config:
+    name: Load Package Configuration
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/bin/yq
+
+      - name: Load packages from config
+        id: set-matrix
+        run: |
+          # Convert packages.yml to JSON matrix format
+          PACKAGES=$(yq eval -o=json '.packages' packages.yml | jq -c .)
+          echo "matrix=$PACKAGES" >> $GITHUB_OUTPUT
+          echo "Loaded packages:"
+          echo "$PACKAGES" | jq .
+
+  update-packages:
+    name: Update ${{ matrix.package.name }}
+    needs: load-config
+    runs-on: ubuntu-latest
+    # Don't fail-fast: continue updating other packages even if one fails
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJson(needs.load-config.outputs.matrix) }}
+    steps:
+      - name: Update package
+        uses: ./.github/workflows/update-package.yml
+        with:
+          package_name: ${{ matrix.package.name }}
+          upstream_repo: ${{ matrix.package.repo }}
+          spec_dir: ${{ matrix.package.spec_dir }}
+        secrets:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
