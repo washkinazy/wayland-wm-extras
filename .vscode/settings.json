@@ -1,0 +1,73 @@
+{
+  // GitHub Copilot - Disabled
+  "github.copilot.enable": {
+    "*": false
+  },
+  "github.copilot.chat.enabled": false,
+  "chat.agent.enabled": false,
+
+  // Editor Appearance
+  "editor.minimap.enabled": false,
+  "workbench.startupEditor": "none",
+
+  // Explorer Behavior
+  "explorer.confirmDelete": false,
+  "explorer.confirmDragAndDrop": false,
+  "workbench.editor.closeEmptyGroups": false,
+
+  // Terminal
+  "terminal.integrated.scrollback": 10000,
+  "terminal.integrated.enableMultiLinePasteWarning": "never",
+
+  // Git
+  "git.openRepositoryInParentFolders": "never",
+
+  // Security & Trust
+  "security.workspace.trust.untrustedFiles": "open",
+  "window.confirmSaveUntitledWorkspace": false,
+
+  // YAML Configuration
+  "[yaml]": {
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "editor.autoIndent": "keep",
+    "diffEditor.ignoreTrimWhitespace": false,
+    "editor.quickSuggestions": {
+      "other": true,
+      "comments": false,
+      "strings": true
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "yaml.schemaStore.enable": true,
+  "yaml.format.printWidth": 180,
+
+  // Markdown Configuration
+  "[markdown]": {
+    "editor.defaultFormatter": "yzhang.markdown-all-in-one"
+  },
+
+  // JSON/JSONC Configuration
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // GitHub Actions
+  "[github-actions-workflow]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // Shell Scripts
+  "files.associations": {
+    "*.spec": "rpm-spec"
+  },
+
+  // Prettier Configuration
+  "prettier.printWidth": 180,
+
+  // Telemetry
+  "redhat.telemetry.enabled": false
+}

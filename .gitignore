@@ -51,7 +51,6 @@ vendor/
 */vendor/
 
 # Editor and IDE files
-.vscode/
 .idea/
 *.swp
 *.swo
