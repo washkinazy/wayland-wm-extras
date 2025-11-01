@@ -42,9 +42,34 @@ All packages are built automatically in COPR. Builds are triggered:
 - When the automated update system merges PRs
 - Manually via COPR web interface
 
-### Local Testing
+## Development
 
-For local testing in a Fedora distrobox container:
+### Using Dev Container (Recommended)
+
+This repository includes a Fedora-based dev container configuration for VSCode/Codespaces:
+
+1. **Open in dev container:**
+   - VSCode: Install "Dev Containers" extension, then "Reopen in Container"
+   - GitHub Codespaces: Click "Code" → "Create codespace on main"
+
+2. **Build and test packages:**
+   ```bash
+   # Test build a package with mock
+   just mock elephant
+
+   # Build with rpmbuild
+   just build walker
+
+   # Run fedora-review
+   just review gtklock
+
+   # Build all packages for all versions
+   just build-matrix
+   ```
+
+### Alternative: Local Distrobox
+
+If you prefer distrobox on your local machine:
 
 ```bash
 # Setup distrobox (see justfile for version-specific setup)
@@ -55,8 +80,4 @@ just enter 41
 
 # Test build a package
 just mock elephant
-
-# Build all packages for all versions
-just build-matrix
 ```
-

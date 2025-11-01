@@ -1,0 +1,89 @@
+{
+  "name": "Fedora RPM Packaging",
+  "image": "registry.fedoraproject.org/fedora:42",
+
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "username": "vscode",
+      "userUid": 1000,
+      "userGid": 1000
+    }
+  },
+
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "anthropic.claude-code",
+        "redhat.vscode-yaml",
+        "tamasfe.even-better-toml",
+        "rust-lang.rust-analyzer",
+        "golang.go",
+        "github.vscode-github-actions",
+        "github.vscode-pull-request-github",
+        "eamodio.gitlens",
+        "timonwong.shellcheck",
+        "foxundermoon.shell-format",
+        "redhat.vscode-xml",
+        "esbenp.prettier-vscode",
+        "yzhang.markdown-all-in-one"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "files.watcherExclude": {
+          "**/.git/objects/**": true,
+          "**/.git/subtree-cache/**": true,
+          "**/node_modules/*/**": true,
+          "**/target/**": true,
+          "**/_build/**": true
+        },
+        "editor.formatOnSave": true,
+        "editor.rulers": [80, 100],
+        "[yaml]": {
+          "editor.defaultFormatter": "redhat.vscode-yaml"
+        },
+        "[toml]": {
+          "editor.defaultFormatter": "tamasfe.even-better-toml"
+        },
+        "shellcheck.enable": true,
+        "shellformat.effectLanguages": [
+          "shellscript",
+          "dockerfile",
+          "dotenv"
+        ]
+      }
+    }
+  },
+
+  "mounts": [
+    // Git configuration
+    "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached",
+
+    // Local binaries from host
+    "source=${localEnv:HOME}/.local/bin,target=/home/vscode/.local/bin,type=bind,consistency=cached",
+
+    // SSH keys (optional, for git operations)
+    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
+  ],
+
+  "remoteEnv": {
+    // Add user's local bin to PATH
+    "PATH": "/home/vscode/.local/bin:${containerEnv:PATH}"
+  },
+
+  // Podman-specific configuration for nested container support
+  "runArgs": [
+    "--security-opt",
+    "label=disable",
+    "--device=/dev/fuse",
+    "--cap-add=SYS_ADMIN"
+  ],
+
+  "containerEnv": {
+    "BUILDAH_ISOLATION": "chroot"
+  },
+
+  "remoteUser": "vscode"
+}
