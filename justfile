@@ -1,19 +1,13 @@
 # Wayland Tools RPM Packaging - justfile
-# All packaging tasks run inside distrobox
+# All packaging tasks run inside distrobox or dev container
 
 # Default recipe - show available commands
 default:
     @just --list
 
 # Enter a Fedora packaging distrobox container
-enter version="41":
+enter version="43":
     distrobox enter fedora-packaging-{{version}}
-
-# Create and setup the Fedora 41 packaging container
-setup-41:
-    distrobox create --name fedora-packaging-41 --image registry.fedoraproject.org/fedora:41
-    distrobox enter fedora-packaging-41 -- sudo dnf install -y just mock fedora-packager rpm-build rpmdevtools spectool rust2rpm golang
-    @echo "Fedora 41 container created. Run 'just enter 41' then 'sudo usermod -a -G mock \$USER' and re-enter."
 
 # Create and setup the Fedora 42 packaging container
 setup-42:
@@ -21,22 +15,20 @@ setup-42:
     distrobox enter fedora-packaging-42 -- sudo dnf install -y just mock fedora-packager rpm-build rpmdevtools spectool rust2rpm golang
     @echo "Fedora 42 container created. Run 'just enter 42' then 'sudo usermod -a -G mock \$USER' and re-enter."
 
-# Create and setup the Fedora 43 packaging container (rawhide)
+# Create and setup the Fedora 43 packaging container
 setup-43:
-    distrobox create --name fedora-packaging-43 --image registry.fedoraproject.org/fedora:rawhide
+    distrobox create --name fedora-packaging-43 --image registry.fedoraproject.org/fedora:43
     distrobox enter fedora-packaging-43 -- sudo dnf install -y just mock fedora-packager rpm-build rpmdevtools spectool rust2rpm golang
-    @echo "Fedora 43 (rawhide) container created. Run 'just enter 43' then 'sudo usermod -a -G mock \$USER' and re-enter."
+    @echo "Fedora 43 container created. Run 'just enter 43' then 'sudo usermod -a -G mock \$USER' and re-enter."
 
-# Setup all Fedora versions (41, 42, 43)
-setup-all:
-    just setup-41
-    just setup-42
-    just setup-43
-    @echo ""
-    @echo "All containers created. Enter each and run: sudo usermod -a -G mock \$USER"
+# Create and setup the Fedora 44 packaging container (rawhide)
+setup-44:
+    distrobox create --name fedora-packaging-44 --image registry.fedoraproject.org/fedora:rawhide
+    distrobox enter fedora-packaging-44 -- sudo dnf install -y just mock fedora-packager rpm-build rpmdevtools spectool rust2rpm golang
+    @echo "Fedora 44 (rawhide) container created. Run 'just enter 44' then 'sudo usermod -a -G mock \$USER' and re-enter."
 
-# Build a package using mock (run inside distrobox)
-mock package fedora_version="41":
+# Build a package using mock (run inside distrobox or dev container)
+mock package fedora_version="43":
     #!/usr/bin/env bash
     set -e
     if [ ! -f "{{package}}/{{package}}.spec" ]; then
@@ -78,7 +70,7 @@ mock package fedora_version="41":
 
     echo "Build complete! Results in: /var/lib/mock/fedora-{{fedora_version}}-x86_64/result/"
 
-# Build a package with rpmbuild (run inside distrobox)
+# Build a package with rpmbuild (run inside distrobox or dev container)
 build package:
     #!/usr/bin/env bash
     if [ ! -f "{{package}}/{{package}}.spec" ]; then
@@ -88,11 +80,11 @@ build package:
     cd {{package}}
     rpmbuild -ba {{package}}.spec
 
-# Review spec file quality with fedora-review (run inside distrobox)
+# Review spec file quality with fedora-review (run inside distrobox or dev container)
 review package:
     fedora-review -n {{package}}
 
-# Generate initial spec file for Rust package (run inside distrobox)
+# Generate initial spec file for Rust package (run inside distrobox or dev container)
 rust-spec package:
     #!/usr/bin/env bash
     mkdir -p {{package}}
@@ -113,160 +105,7 @@ update package version:
     echo "  3. Add %changelog entry"
     echo "  4. Test with 'just mock {{package}}'"
 
-# NOTE: Vendoring recipes are deprecated. Packages now fetch dependencies at build time.
-# These recipes are kept for reference but are no longer used in COPR builds.
-
-# Vendor Rust dependencies for swayosd (run inside distrobox) - DEPRECATED
-vendor-swayosd version="0.2.1":
-    #!/usr/bin/env bash
-    set -e
-    cd swayosd
-
-    NAME="swayosd"
-    GITNAME="SwayOSD"
-    VERSION="{{version}}"
-
-    echo "Vendoring dependencies for SwayOSD ${VERSION}..."
-
-    # Download source if not present
-    if [ ! -f "${GITNAME}-${VERSION}.tar.gz" ]; then
-        echo "Downloading ${GITNAME}-${VERSION}.tar.gz..."
-        curl -L -o "${GITNAME}-${VERSION}.tar.gz" \
-            "https://github.com/ErikReider/SwayOSD/archive/v${VERSION}/${GITNAME}-${VERSION}.tar.gz"
-    fi
-
-    # Extract source
-    echo "Extracting source..."
-    tar xf "${GITNAME}-${VERSION}.tar.gz"
-
-    # Vendor dependencies
-    echo "Running cargo vendor..."
-    cd "${GITNAME}-${VERSION}"
-    cargo vendor
-
-    # Create vendor tarball
-    echo "Creating vendor tarball..."
-    tar Jcvf "../${NAME}-${VERSION}-vendor.tar.xz" vendor/
-
-    # Clean up extracted directory
-    cd ..
-    rm -rf "${GITNAME}-${VERSION}"
-
-    echo "Done! Created ${NAME}-${VERSION}-vendor.tar.xz"
-
-# Vendor Go dependencies for elephant (run inside distrobox) - DEPRECATED
-vendor-elephant version="2.7.7":
-    #!/usr/bin/env bash
-    set -e
-    cd elephant
-
-    NAME="elephant"
-    VERSION="{{version}}"
-
-    echo "Vendoring dependencies for elephant ${VERSION}..."
-
-    # Download source if not present
-    if [ ! -f "${NAME}-${VERSION}.tar.gz" ]; then
-        echo "Downloading ${NAME}-${VERSION}.tar.gz..."
-        curl -L -o "${NAME}-${VERSION}.tar.gz" \
-            "https://github.com/abenz1267/elephant/archive/v${VERSION}/${NAME}-${VERSION}.tar.gz"
-    fi
-
-    # Extract source
-    echo "Extracting source..."
-    tar xf "${NAME}-${VERSION}.tar.gz"
-
-    # Vendor dependencies
-    echo "Running go mod vendor..."
-    cd "${NAME}-${VERSION}"
-    go mod vendor
-
-    # Create vendor tarball
-    echo "Creating vendor tarball..."
-    tar Jcvf "../${NAME}-${VERSION}-vendor.tar.xz" vendor/
-
-    # Clean up extracted directory
-    cd ..
-    rm -rf "${NAME}-${VERSION}"
-
-    echo "Done! Created ${NAME}-${VERSION}-vendor.tar.xz"
-
-# Vendor Rust dependencies for walker (run inside distrobox) - DEPRECATED
-vendor-walker version="2.7.1":
-    #!/usr/bin/env bash
-    set -e
-    cd walker
-
-    NAME="walker"
-    VERSION="{{version}}"
-
-    echo "Vendoring dependencies for walker ${VERSION}..."
-
-    # Download source if not present
-    if [ ! -f "${NAME}-${VERSION}.tar.gz" ]; then
-        echo "Downloading ${NAME}-${VERSION}.tar.gz..."
-        curl -L -o "${NAME}-${VERSION}.tar.gz" \
-            "https://github.com/abenz1267/walker/archive/v${VERSION}/${NAME}-${VERSION}.tar.gz"
-    fi
-
-    # Extract source
-    echo "Extracting source..."
-    tar xf "${NAME}-${VERSION}.tar.gz"
-
-    # Vendor dependencies
-    echo "Running cargo vendor..."
-    cd "${NAME}-${VERSION}"
-    cargo vendor
-
-    # Create vendor tarball
-    echo "Creating vendor tarball..."
-    tar Jcvf "../${NAME}-${VERSION}-vendor.tar.xz" vendor/
-
-    # Clean up extracted directory
-    cd ..
-    rm -rf "${NAME}-${VERSION}"
-
-    echo "Done! Created ${NAME}-${VERSION}-vendor.tar.xz"
-
-# Vendor Rust dependencies for regreet (run inside distrobox) - DEPRECATED
-vendor-regreet version="0.2.0":
-    #!/usr/bin/env bash
-    set -e
-    cd regreet
-
-    NAME="regreet"
-    GITNAME="ReGreet"
-    VERSION="{{version}}"
-
-    echo "Vendoring dependencies for ReGreet ${VERSION}..."
-
-    # Download source if not present
-    if [ ! -f "${GITNAME}-${VERSION}.tar.gz" ]; then
-        echo "Downloading ${GITNAME}-${VERSION}.tar.gz..."
-        curl -L -o "${GITNAME}-${VERSION}.tar.gz" \
-            "https://github.com/rharish101/ReGreet/archive/${VERSION}/${GITNAME}-${VERSION}.tar.gz"
-    fi
-
-    # Extract source
-    echo "Extracting source..."
-    tar xf "${GITNAME}-${VERSION}.tar.gz"
-
-    # Vendor dependencies
-    echo "Running cargo vendor..."
-    cd "${GITNAME}-${VERSION}"
-    cargo vendor
-
-    # Create vendor tarball
-    echo "Creating vendor tarball..."
-    tar Jcvf "../${NAME}-${VERSION}-vendor.tar.xz" vendor/
-
-    # Clean up extracted directory
-    cd ..
-    rm -rf "${GITNAME}-${VERSION}"
-
-    echo "Done! Created ${NAME}-${VERSION}-vendor.tar.xz"
-
-# Clean mock build results (run inside distrobox)
+# Clean mock build results (run inside distrobox or dev container)
 clean:
     rm -rf /var/lib/mock/fedora-*/result/*.rpm
 
@@ -280,8 +119,8 @@ list:
         fi
     done
 
-# Run mock build for all packages (run inside distrobox)
-build-all fedora_version="41":
+# Run mock build for all packages (run inside distrobox or dev container)
+build-all fedora_version="43":
     #!/usr/bin/env bash
     for dir in */; do
         package=$(basename "$dir")
@@ -291,20 +130,20 @@ build-all fedora_version="41":
         fi
     done
 
-# Build a package for all Fedora versions (41, 42, 43)
+# Build a package for all Fedora versions (42, 43, 44)
 mock-all package:
     #!/usr/bin/env bash
-    echo "Building {{package}} for Fedora 41..."
-    just mock {{package}} 41
     echo "Building {{package}} for Fedora 42..."
     just mock {{package}} 42
     echo "Building {{package}} for Fedora 43..."
     just mock {{package}} 43
+    echo "Building {{package}} for Fedora 44..."
+    just mock {{package}} 44
 
 # Build all packages for all Fedora versions
 build-matrix:
     #!/usr/bin/env bash
-    for version in 41 42 43; do
+    for version in 42 43 44; do
         echo "===== Building all packages for Fedora $version ====="
         just build-all $version
     done

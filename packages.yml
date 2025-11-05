@@ -38,3 +38,7 @@ packages:
   - name: sway-audio-idle-inhibit
     repo: ErikReider/SwayAudioIdleInhibit
     spec_dir: sway-audio-idle-inhibit
+
+  - name: nwg-look
+    repo: nwg-piotr/nwg-look
+    spec_dir: nwg-look
