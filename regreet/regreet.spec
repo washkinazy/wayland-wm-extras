@@ -4,13 +4,14 @@
 Name:           regreet
 Version:        0.2.0
 %forgemeta
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Clean and customizable greeter for greetd
 
 License:        GPL-3.0-or-later
 URL:            %{forgeurl}
 Source0:        %{forgesource}
 Source1:        regreet.toml
+Source2:        regreet-tmpfiles.conf
 
 BuildRequires:  rust
 BuildRequires:  cargo
@@ -20,7 +21,7 @@ BuildRequires:  glib2-devel
 BuildRequires:  systemd-rpm-macros
 
 Requires:       gtk4
-Requires:       greetd
+Requires(pre):  greetd
 Provides:       greetd-greeter
 
 %description
@@ -44,8 +45,8 @@ install -Dm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/greetd/regreet.toml
 # Install sample configuration
 install -Dm644 regreet.sample.toml %{buildroot}%{_docdir}/regreet/regreet.sample.toml
 
-# Install systemd tmpfiles configuration
-install -Dm644 systemd-tmpfiles.conf %{buildroot}%{_tmpfilesdir}/regreet.conf
+# Install systemd tmpfiles configuration (Fedora-specific, uses 'greetd' user)
+install -Dm644 %{SOURCE2} %{buildroot}%{_tmpfilesdir}/regreet.conf
 
 %files
 %license LICENSES/*
@@ -56,6 +57,10 @@ install -Dm644 systemd-tmpfiles.conf %{buildroot}%{_tmpfilesdir}/regreet.conf
 %{_tmpfilesdir}/regreet.conf
 
 %changelog
+* Tue Nov 05 2024 Washkinazy <noreply@github.com> - 0.2.0-2
+- Fix tmpfiles configuration to use 'greetd' user (Fedora convention) instead of 'greeter' (Arch convention)
+- Add Requires(pre) for greetd to ensure user exists before package installation
+
 * Fri Oct 31 2025 Automated Update <noreply@github.com> - 0.2.0-1
 - Update to 0.2.0
 
