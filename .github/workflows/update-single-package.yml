@@ -18,6 +18,8 @@ on:
           - gtklock-powerbar-module
           - gtklock-userinfo-module
           - sway-audio-idle-inhibit
+          - waypaper
+          - nwg-look
 
 jobs:
   get-package-config:

@@ -42,3 +42,15 @@ packages:
   - name: nwg-look
     repo: nwg-piotr/nwg-look
     spec_dir: nwg-look
+
+  - name: python-screeninfo
+    repo: rr-/screeninfo
+    spec_dir: python-screeninfo
+
+  - name: python-imageio-ffmpeg
+    repo: imageio/imageio-ffmpeg
+    spec_dir: python-imageio-ffmpeg
+
+  - name: waypaper
+    repo: anufrievroman/waypaper
+    spec_dir: waypaper
