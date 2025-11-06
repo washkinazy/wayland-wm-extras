@@ -2,7 +2,7 @@
 %global forgeurl https://github.com/abenz1267/elephant
 
 Name:           elephant
-Version:        2.14.3
+Version:        2.10.4
 %forgemeta
 Release:        1%{?dist}
 Summary:        Data provider service for Walker launcher
@@ -61,8 +61,9 @@ install -Dm755 _build/providers/*.so %{buildroot}%{_sysconfdir}/xdg/elephant/pro
 %{_sysconfdir}/xdg/elephant/providers/*.so
 
 %changelog
-* Thu Nov 06 2025 Automated Update <noreply@github.com> - 2.14.3-1
-- Update to 2.14.3
+* Wed Jan 08 2025 Manual Update <noreply@github.com> - 2.10.4-1
+- Temporary downgrade to 2.10.4 for Fedora 42 compatibility (Go 1.24.9)
+- Version 2.14.3+ requires Go 1.25.0+
 
 * Sat Nov 01 2025 Automated Update <noreply@github.com> - 2.10.4-1
 - Update to 2.10.4

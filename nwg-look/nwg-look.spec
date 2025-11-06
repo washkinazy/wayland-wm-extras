@@ -4,7 +4,7 @@
 Name:           nwg-look
 Version:        1.0.6
 %forgemeta
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        GTK3 settings editor for Wayland compositors
 
 License:        MIT
@@ -12,6 +12,7 @@ URL:            %{forgeurl}
 Source0:        %{forgesource}
 
 BuildRequires:  golang >= 1.21
+BuildRequires:  git-core
 BuildRequires:  pkgconfig(cairo)
 BuildRequires:  pkgconfig(gdk-3.0)
 BuildRequires:  pkgconfig(gio-2.0)
@@ -65,5 +66,8 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/nwg-look.desktop
 %{_datadir}/pixmaps/nwg-look.svg
 
 %changelog
+* Wed Jan 08 2025 Washkinazy <noreply@github.com> - 1.0.6-2
+- Add git-core BuildRequires for Go module fetching
+
 * Tue Nov 05 2024 Washkinazy <noreply@github.com> - 1.0.6-1
 - Initial package for version 1.0.6
