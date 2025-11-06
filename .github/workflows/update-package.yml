@@ -43,21 +43,32 @@ jobs:
         run: |
           echo "Checking for latest release of ${{ inputs.upstream_repo }}"
 
-          # Get latest release from GitHub API
+          # Try to get latest release from GitHub API
           RELEASE_DATA=$(curl -s "https://api.github.com/repos/${{ inputs.upstream_repo }}/releases/latest")
-
-          # Extract tag and version
           TAG=$(echo "$RELEASE_DATA" | jq -r '.tag_name')
-          VERSION=$(echo "$TAG" | sed 's/^v//')  # Strip leading 'v'
 
+          # If no release found, fall back to latest tag
           if [ -z "$TAG" ] || [ "$TAG" = "null" ]; then
-            echo "Error: Could not fetch latest release"
-            exit 1
+            echo "No releases found, checking for tags..."
+            TAG_DATA=$(curl -s "https://api.github.com/repos/${{ inputs.upstream_repo }}/tags")
+            TAG=$(echo "$TAG_DATA" | jq -r '.[0].name')
+
+            if [ -z "$TAG" ] || [ "$TAG" = "null" ]; then
+              echo "Error: Could not fetch latest release or tag"
+              exit 1
+            fi
+
+            echo "Using latest tag: $TAG"
+          else
+            echo "Using latest release: $TAG"
           fi
+
+          # Strip leading 'v' from version
+          VERSION=$(echo "$TAG" | sed 's/^v//')
 
           echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Latest release: $TAG (version: $VERSION)"
+          echo "Latest version: $TAG (version: $VERSION)"
 
       - name: Get current spec version
         id: current
