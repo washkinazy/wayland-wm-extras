@@ -54,3 +54,7 @@ packages:
   - name: waypaper
     repo: anufrievroman/waypaper
     spec_dir: waypaper
+
+  - name: xcur2png
+    repo: eworm-de/xcur2png
+    spec_dir: xcur2png
