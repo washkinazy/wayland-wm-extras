@@ -1,3 +1,4 @@
+%global debug_package %{nil}
 %global forgeurl https://github.com/jovanlanik/gtklock-powerbar-module
 
 Name:           gtklock-powerbar-module

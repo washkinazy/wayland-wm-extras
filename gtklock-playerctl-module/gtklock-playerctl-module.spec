@@ -1,3 +1,4 @@
+%global debug_package %{nil}
 %global forgeurl https://github.com/jovanlanik/gtklock-playerctl-module
 
 Name:           gtklock-playerctl-module

@@ -1,3 +1,4 @@
+%global debug_package %{nil}
 %global build_type_safety_c 0
 %global forgeurl https://github.com/eworm-de/xcur2png
 %global tag %{version}

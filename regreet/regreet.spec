@@ -1,3 +1,4 @@
+%global debug_package %{nil}
 %global forgeurl https://github.com/rharish101/ReGreet
 %global tag %{version}
 

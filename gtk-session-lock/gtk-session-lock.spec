@@ -1,3 +1,4 @@
+%global debug_package %{nil}
 %global forgeurl https://github.com/Cu3PO42/gtk-session-lock
 
 Name:           gtk-session-lock

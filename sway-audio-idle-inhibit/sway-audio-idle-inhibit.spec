@@ -1,3 +1,4 @@
+%global debug_package %{nil}
 %global forgeurl https://github.com/ErikReider/SwayAudioIdleInhibit
 
 Name:           sway-audio-idle-inhibit

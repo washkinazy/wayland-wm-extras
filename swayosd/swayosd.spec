@@ -1,4 +1,5 @@
 %global origname SwayOSD
+%global debug_package %{nil}
 %global forgeurl https://github.com/ErikReider/SwayOSD
 
 Name:           swayosd

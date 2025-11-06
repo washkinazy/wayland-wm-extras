@@ -1,3 +1,4 @@
+%global debug_package %{nil}
 %global forgeurl https://github.com/abenz1267/walker
 
 Name:           walker

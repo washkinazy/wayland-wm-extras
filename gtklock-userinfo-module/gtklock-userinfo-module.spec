@@ -1,3 +1,4 @@
+%global debug_package %{nil}
 %global forgeurl https://github.com/jovanlanik/gtklock-userinfo-module
 
 Name:           gtklock-userinfo-module
