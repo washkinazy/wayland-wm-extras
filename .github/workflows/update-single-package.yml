@@ -18,8 +18,14 @@ on:
           - gtklock-powerbar-module
           - gtklock-userinfo-module
           - sway-audio-idle-inhibit
-          - waypaper
           - nwg-look
+          - python-screeninfo
+          - python-imageio-ffmpeg
+          - waypaper
+          - xcur2png
+          - nerd-fonts-firacode
+          - nerd-fonts-jetbrainsmono
+          - nerd-fonts-cascadiacode
 
 jobs:
   get-package-config:
