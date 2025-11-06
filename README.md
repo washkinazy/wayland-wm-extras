@@ -15,6 +15,9 @@ A collection of Wayland window manager tools and utilities for Fedora, packaged 
 - **[gtklock-userinfo-module](https://github.com/jovanlanik/gtklock-userinfo-module)** [(spec)](gtklock-userinfo-module/gtklock-userinfo-module.spec)
 - **[nwg-look](https://github.com/nwg-piotr/nwg-look)** [(spec)](nwg-look/nwg-look.spec)
 - **[sway-audio-idle-inhibit](https://github.com/ErikReider/SwayAudioIdleInhibit)** [(spec)](sway-audio-idle-inhibit/sway-audio-idle-inhibit.spec)
+- **[Nerd Fonts - FiraCode](https://github.com/ryanoasis/nerd-fonts)** [(spec)](nerd-fonts-firacode/nerd-fonts-firacode.spec)
+- **[Nerd Fonts - JetBrainsMono](https://github.com/ryanoasis/nerd-fonts)** [(spec)](nerd-fonts-jetbrainsmono/nerd-fonts-jetbrainsmono.spec)
+- **[Nerd Fonts - CascadiaCode](https://github.com/ryanoasis/nerd-fonts)** [(spec)](nerd-fonts-cascadiacode/nerd-fonts-cascadiacode.spec)
 
 ## Installation
 
