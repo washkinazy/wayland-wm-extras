@@ -26,9 +26,7 @@ Requires(pre):  greetd
 Provides:       greetd-greeter
 
 %description
-ReGreet is a clean and customizable GTK-based greeter for greetd, designed
-for Wayland compositors. It provides a simple login interface with support
-for session selection and user management.
+GTK-based greeter for greetd with session selection and user management.
 
 %prep
 %autosetup -n ReGreet-%{version}

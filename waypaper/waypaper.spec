@@ -16,8 +16,7 @@ BuildRequires:  python3-devel
 Recommends:     swww
 
 %description
-GUI wallpaper setter for Wayland and Xorg window managers. It works as
-a frontend for popular wallpaper backends like swaybg, swww, wallutils and feh.
+GUI wallpaper setter for Wayland and Xorg. Frontend for swaybg, swww, wallutils, and feh.
 
 %prep
 %autosetup -n %{name}-%{version}

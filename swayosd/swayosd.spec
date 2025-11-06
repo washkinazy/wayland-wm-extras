@@ -44,8 +44,7 @@ Requires:       cairo
 Requires:       dbus-libs
 
 %description
-A GTK based on-screen display (OSD) for common actions like volume changes,
-brightness, caps-lock state, and other keyboard shortcuts in Wayland compositors.
+On-screen display (OSD) for volume, brightness, and caps-lock state in Wayland compositors.
 
 %prep
 %autosetup -n %{origname}-%{version}

@@ -12,10 +12,7 @@ URL:            %{forgeurl}
 Source0:        %{forgeurl}/releases/download/v%{version}/FiraCode.zip
 
 %description
-FiraCode is a monospaced font with programming ligatures. This version has been
-patched with additional glyphs from Nerd Fonts, including icons from Font Awesome,
-Devicons, Octicons, Powerline, and many more. Perfect for terminal emulators and
-code editors.
+FiraCode monospaced font patched with Nerd Fonts icon glyphs.
 
 %prep
 %autosetup -c

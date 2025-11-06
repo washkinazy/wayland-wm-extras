@@ -12,11 +12,7 @@ URL:            %{forgeurl}
 Source0:        %{forgeurl}/releases/download/v%{version}/JetBrainsMono.zip
 
 %description
-JetBrains Mono is a typeface designed for developers by JetBrains. This version
-has been patched with additional glyphs from Nerd Fonts, including icons from
-Font Awesome, Devicons, Octicons, Powerline, and many more. The font features
-increased height for a better reading experience and includes ligatures for
-common programming multi-character combinations.
+JetBrains Mono monospaced font patched with Nerd Fonts icon glyphs.
 
 %prep
 %autosetup -c

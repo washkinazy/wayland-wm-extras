@@ -32,10 +32,8 @@ Requires:       glib2
 Requires:       elephant
 
 %description
-Walker is a fast, customizable application launcher built with GTK4 and Rust
-for Wayland compositors. It provides multiple built-in providers including
-application launching, calculator, file browser, command runner, clipboard
-history, and more.
+Application launcher for Wayland compositors with built-in providers for
+applications, calculator, file browser, command runner, and clipboard history.
 
 %prep
 %autosetup -n %{name}-%{version}

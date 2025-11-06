@@ -12,11 +12,8 @@ URL:            %{forgeurl}
 Source0:        %{forgeurl}/releases/download/v%{version}/CascadiaCode.zip
 
 %description
-Cascadia Code is a monospaced font designed by Microsoft for the Windows Terminal
-and modern development environments. This version has been patched with additional
-glyphs from Nerd Fonts, including icons from Font Awesome, Devicons, Octicons,
-Powerline, and many more. The patched version is renamed to "CaskaydiaCove" to
-comply with OFL Reserved Font Name requirements.
+Cascadia Code monospaced font patched with Nerd Fonts icon glyphs.
+Renamed to CaskaydiaCove per OFL Reserved Font Name requirements.
 
 %prep
 %autosetup -c

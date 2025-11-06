@@ -5,7 +5,7 @@ Name:           gtklock-playerctl-module
 Version:        4.0.0
 %forgemeta
 Release:        1%{?dist}
-Summary:        Gtklock module adding media player controls to the lock screen
+Summary:        Gtklock module for media player controls
 
 License:        GPL-3.0-or-later
 URL:            %{forgeurl}
