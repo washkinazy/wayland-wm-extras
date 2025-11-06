@@ -58,3 +58,15 @@ packages:
   - name: xcur2png
     repo: eworm-de/xcur2png
     spec_dir: xcur2png
+
+  - name: nerd-fonts-firacode
+    repo: ryanoasis/nerd-fonts
+    spec_dir: nerd-fonts-firacode
+
+  - name: nerd-fonts-jetbrainsmono
+    repo: ryanoasis/nerd-fonts
+    spec_dir: nerd-fonts-jetbrainsmono
+
+  - name: nerd-fonts-cascadiacode
+    repo: ryanoasis/nerd-fonts
+    spec_dir: nerd-fonts-cascadiacode
