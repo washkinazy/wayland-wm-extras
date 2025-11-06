@@ -22,9 +22,8 @@ BuildRequires:  vala
 Requires:       gtk3
 
 %description
-gtk-session-lock is a library to create screen lockers for Wayland compositors
-using the ext-session-lock-v1 protocol. It provides GTK3 bindings for building
-lock screens with proper Wayland session lock support.
+Library for creating Wayland screen lockers using ext-session-lock-v1 protocol.
+Provides GTK3 bindings.
 
 %package        devel
 Summary:        Development files for %{name}

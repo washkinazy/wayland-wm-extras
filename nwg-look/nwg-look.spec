@@ -25,9 +25,8 @@ Requires:       /usr/bin/gsettings
 Requires:       xcur2png
 
 %description
-nwg-look is a GTK3 settings editor adapted to work in the wlroots-based
-Wayland compositors. It provides an interface for managing GTK themes,
-icons, cursor themes, and other GTK settings.
+GTK3 settings editor for wlroots-based Wayland compositors.
+Manages GTK themes, icons, cursors, and other GTK settings.
 
 %prep
 %autosetup -n %{name}-%{version}

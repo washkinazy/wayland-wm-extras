@@ -5,7 +5,7 @@ Name:           gtklock-userinfo-module
 Version:        4.0.1
 %forgemeta
 Release:        1%{?dist}
-Summary:        Gtklock module adding user info to the lock screen
+Summary:        Gtklock module for user info display
 
 License:        GPL-3.0-or-later
 URL:            %{forgeurl}

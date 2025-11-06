@@ -21,9 +21,8 @@ BuildRequires:  wayland-protocols-devel
 Requires:       systemd
 
 %description
-Elephant is a data provider service that supplies information to the Walker
-launcher. It provides plugins for various data sources including applications,
-clipboard history, Bluetooth devices, and more.
+Data provider service for Walker launcher with plugins for applications,
+clipboard history, and Bluetooth devices.
 
 %prep
 %autosetup -n %{name}-%{version}

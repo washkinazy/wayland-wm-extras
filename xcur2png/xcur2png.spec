@@ -19,9 +19,7 @@ BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(xcursor)
 
 %description
-xcur2png is a program which let you take PNG image from X cursor, and generate
-config-file which is reusable by xcursorgen. To put it simply, it is
-converter from X cursor to PNG image.
+Converts X cursor files to PNG images and generates xcursorgen config files.
 
 %prep
 %autosetup -n %{name}-%{version}

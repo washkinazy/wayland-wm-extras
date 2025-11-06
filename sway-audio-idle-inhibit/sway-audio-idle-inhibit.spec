@@ -20,12 +20,8 @@ BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libsystemd)
 
 %description
-Prevents swayidle from sleeping while any application
-is outputting or receiving audio. Should work with all Wayland
-desktops that support the zwp_idle_inhibit_manager_v1
-protocol but only tested in Sway.
-
-This only works for Pulseaudio / Pipewire Pulse.
+Prevents idle sleep while audio is active. Uses zwp_idle_inhibit_manager_v1 protocol.
+Requires Pulseaudio or Pipewire Pulse.
 
 %prep
 %forgeautosetup -p1
