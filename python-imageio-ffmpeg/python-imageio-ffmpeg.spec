@@ -1,3 +1,4 @@
+%global debug_package %{nil}
 %global forgeurl https://github.com/imageio/imageio-ffmpeg
 
 Name:           python-imageio-ffmpeg

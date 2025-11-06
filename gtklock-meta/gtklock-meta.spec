@@ -1,3 +1,5 @@
+%global debug_package %{nil}
+
 Name:           gtklock-meta
 Version:        1.0
 Release:        1%{?dist}

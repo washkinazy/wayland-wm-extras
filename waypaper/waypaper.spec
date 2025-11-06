@@ -1,3 +1,4 @@
+%global debug_package %{nil}
 %global forgeurl https://github.com/anufrievroman/waypaper
 
 Name:           waypaper
