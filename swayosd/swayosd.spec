@@ -3,7 +3,7 @@
 %global forgeurl https://github.com/ErikReider/SwayOSD
 
 Name:           swayosd
-Version:        0.2.1
+Version:        0.3.0
 %forgemeta
 Release:        1%{?dist}
 Summary:        A GTK based on screen display for keyboard shortcuts like caps-lock and volume
@@ -77,6 +77,9 @@ rm -f %{buildroot}/usr/share/licenses/swayosd/LICENSE
 %{_datadir}/polkit-1/rules.d/org.erikreider.swayosd.rules
 
 %changelog
+* Fri Jan 16 2026 Automated Update <noreply@github.com> - 0.3.0-1
+- Update to 0.3.0
+
 * Fri Oct 31 2025 Automated Update <noreply@github.com> - 0.2.1-1
 - Update to 0.2.1
 
