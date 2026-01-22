@@ -1,4 +1,8 @@
 packages:
+  - name: ashell
+    repo: MalpenZibo/ashell
+    spec_dir: ashell
+
   - name: elephant
     repo: abenz1267/elephant
     spec_dir: elephant
