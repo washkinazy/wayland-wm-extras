@@ -1,6 +1,8 @@
 # wayland-wm-extras
 
-A collection of Wayland window manager tools and utilities for Fedora, packaged for COPR.
+A collection fonts, tools and utilities that I use in my Fedora Systems. 
+
+QOL for me so I don't need to manually compile, build and copy around fonts.
 
 ## Packages
 
@@ -52,15 +54,25 @@ All packages are built automatically in COPR. Builds are triggered:
 
 ## Development
 
-### Using Dev Container (Recommended)
+### Using Distrobox
 
-This repository includes a Fedora-based dev container configuration for VSCode/Codespaces:
+This repository uses distrobox for local development and testing:
 
-1. **Open in dev container:**
-   - VSCode: Install "Dev Containers" extension, then "Reopen in Container"
-   - GitHub Codespaces: Click "Code" → "Create codespace on main"
+1. **Set up a Fedora container:**
+   ```bash
+   just setup-43           # Create Fedora 43 container
+   just enter 43           # Enter the container
+   sudo usermod -a -G mock $USER  # Add yourself to mock group (then re-enter)
+   ```
 
-2. **Build and test packages:**
+2. **Enable network access in mock** (required for Rust/Go builds):
+   ```bash
+   sudo mkdir -p /etc/mock
+   echo "config_opts['use_host_resolv'] = True" | sudo tee -a /etc/mock/site-defaults.cfg
+   echo "config_opts['rpmbuild_networking'] = True" | sudo tee -a /etc/mock/site-defaults.cfg
+   ```
+
+3. **Build and test packages:**
    ```bash
    # Test build a package with mock
    just mock elephant
