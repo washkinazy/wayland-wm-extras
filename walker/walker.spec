@@ -2,7 +2,7 @@
 %global forgeurl https://github.com/abenz1267/walker
 
 Name:           walker
-Version:        2.14.0
+Version:        2.14.1
 %forgemeta
 Release:        1%{?dist}
 Summary:        Fast, customizable Wayland application launcher
@@ -65,6 +65,9 @@ install -Dm644 resources/themes/default/*.css %{buildroot}%{_sysconfdir}/xdg/wal
 %{_sysconfdir}/xdg/walker/themes/default/*.css
 
 %changelog
+* Fri Jan 23 2026 Automated Update <noreply@github.com> - 2.14.1-1
+- Update to 2.14.1
+
 * Thu Jan 22 2026 Automated Update <noreply@github.com> - 2.14.0-1
 - Update to 2.14.0
 
