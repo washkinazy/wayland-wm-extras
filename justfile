@@ -66,7 +66,7 @@ mock package fedora_version="43":
     fi
 
     echo "Building with mock for Fedora {{fedora_version}}..."
-    mock -r fedora-{{fedora_version}}-x86_64 "$SRPM"
+    mock -r fedora-{{fedora_version}}-x86_64 --enable-network "$SRPM"
 
     echo "Build complete! Results in: /var/lib/mock/fedora-{{fedora_version}}-x86_64/result/"
 

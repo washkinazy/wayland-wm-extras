@@ -71,6 +71,10 @@ packages:
     repo: ryanoasis/nerd-fonts
     spec_dir: nerd-fonts-jetbrainsmono
 
+  - name: ironbar
+    repo: JakeStanger/ironbar
+    spec_dir: ironbar
+
   - name: nerd-fonts-cascadiacode
     repo: ryanoasis/nerd-fonts
     spec_dir: nerd-fonts-cascadiacode
