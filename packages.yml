@@ -74,3 +74,23 @@ packages:
   - name: nerd-fonts-cascadiacode
     repo: ryanoasis/nerd-fonts
     spec_dir: nerd-fonts-cascadiacode
+
+  - name: hyprland-protocols
+    repo: hyprwm/hyprland-protocols
+    spec_dir: hyprland-protocols
+
+  - name: hyprutils
+    repo: hyprwm/hyprutils
+    spec_dir: hyprutils
+
+  - name: hyprwayland-scanner
+    repo: hyprwm/hyprwayland-scanner
+    spec_dir: hyprwayland-scanner
+
+  - name: hyprlang
+    repo: hyprwm/hyprlang
+    spec_dir: hyprlang
+
+  - name: hypridle
+    repo: hyprwm/hypridle
+    spec_dir: hypridle
