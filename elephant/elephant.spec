@@ -2,7 +2,7 @@
 %global forgeurl https://github.com/abenz1267/elephant
 
 Name:           elephant
-Version:        2.20.0
+Version:        2.20.2
 %forgemeta
 Release:        1%{?dist}
 Summary:        Data provider service for Walker launcher
@@ -61,6 +61,9 @@ install -Dm755 _build/providers/*.so %{buildroot}%{_sysconfdir}/xdg/elephant/pro
 %{_sysconfdir}/xdg/elephant/providers/*.so
 
 %changelog
+* Tue Mar 10 2026 Automated Update <noreply@github.com> - 2.20.2-1
+- Update to 2.20.2
+
 * Sun Mar 08 2026 Automated Update <noreply@github.com> - 2.20.0-1
 - Update to 2.20.0
 
