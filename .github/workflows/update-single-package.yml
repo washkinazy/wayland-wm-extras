@@ -26,6 +26,8 @@ on:
           - nerd-fonts-firacode
           - nerd-fonts-jetbrainsmono
           - nerd-fonts-cascadiacode
+          - xone
+          - xone-firmware
 
 jobs:
   get-package-config:
@@ -34,6 +36,7 @@ jobs:
     outputs:
       upstream_repo: ${{ steps.config.outputs.repo }}
       spec_dir: ${{ steps.config.outputs.spec_dir }}
+      track_branch: ${{ steps.config.outputs.track }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -49,6 +52,7 @@ jobs:
           # Find the package in packages.yml and extract its configuration
           REPO=$(yq eval ".packages[] | select(.name == \"${{ inputs.package_name }}\") | .repo" packages.yml)
           SPEC_DIR=$(yq eval ".packages[] | select(.name == \"${{ inputs.package_name }}\") | .spec_dir" packages.yml)
+          TRACK=$(yq eval ".packages[] | select(.name == \"${{ inputs.package_name }}\") | .track // \"\"" packages.yml)
 
           if [ -z "$REPO" ] || [ "$REPO" = "null" ]; then
             echo "Error: Package ${{ inputs.package_name }} not found in packages.yml"
@@ -57,11 +61,13 @@ jobs:
 
           echo "repo=$REPO" >> $GITHUB_OUTPUT
           echo "spec_dir=$SPEC_DIR" >> $GITHUB_OUTPUT
+          echo "track=$TRACK" >> $GITHUB_OUTPUT
 
           echo "Package configuration:"
           echo "  Name: ${{ inputs.package_name }}"
           echo "  Repo: $REPO"
           echo "  Spec Dir: $SPEC_DIR"
+          echo "  Track: ${TRACK:-releases}"
 
   update-package:
     name: Update ${{ inputs.package_name }}
@@ -71,5 +77,6 @@ jobs:
       package_name: ${{ inputs.package_name }}
       upstream_repo: ${{ needs.get-package-config.outputs.upstream_repo }}
       spec_dir: ${{ needs.get-package-config.outputs.spec_dir }}
+      track_branch: ${{ needs.get-package-config.outputs.track_branch }}
     secrets:
       PAT_TOKEN: ${{ secrets.PAT_TOKEN }}

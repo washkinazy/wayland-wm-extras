@@ -31,6 +31,7 @@ SOURCE_VALUE=$(echo "$SOURCE_LINE" | awk '{print $2}')
 if echo "$SOURCE_VALUE" | grep -q "%{forgesource}"; then
     # Extract forgeurl and version to construct the archive URL
     FORGEURL=$(grep "^%global forgeurl" "$SPEC_FILE" | awk '{print $3}')
+    COMMIT=$(grep "^%global commit " "$SPEC_FILE" | awk '{print $3}')
     VERSION=$(grep "^Version:" "$SPEC_FILE" | head -1 | awk '{print $2}')
 
     # Handle empty VERSION (might be using %forgemeta or other macros)
@@ -43,20 +44,25 @@ if echo "$SOURCE_VALUE" | grep -q "%{forgesource}"; then
         exit 1
     fi
 
-    # Construct GitHub archive URL from forgeurl
-    # Try with 'v' prefix first (most common), then without, then refs/tags/
-    SOURCE_URL="${FORGEURL}/archive/v${VERSION}.tar.gz"
+    # If spec has a %global commit, use it directly for the archive URL
+    if [ -n "$COMMIT" ]; then
+        SOURCE_URL="${FORGEURL}/archive/${COMMIT}.tar.gz"
+    else
+        # Construct GitHub archive URL from forgeurl
+        # Try with 'v' prefix first (most common), then without, then refs/tags/
+        SOURCE_URL="${FORGEURL}/archive/v${VERSION}.tar.gz"
 
-    # Quick check if URL is accessible, try alternative formats if not
-    HTTP_CHECK=$(curl -s -o /dev/null -w "%{http_code}" -L -I "$SOURCE_URL" 2>/dev/null || echo "000")
-    if [ "$HTTP_CHECK" != "200" ] && [ "$HTTP_CHECK" != "302" ]; then
-        # Try without 'v' prefix
-        SOURCE_URL="${FORGEURL}/archive/${VERSION}.tar.gz"
+        # Quick check if URL is accessible, try alternative formats if not
         HTTP_CHECK=$(curl -s -o /dev/null -w "%{http_code}" -L -I "$SOURCE_URL" 2>/dev/null || echo "000")
-
         if [ "$HTTP_CHECK" != "200" ] && [ "$HTTP_CHECK" != "302" ]; then
-            # Try refs/tags/ format
-            SOURCE_URL="${FORGEURL}/archive/refs/tags/${VERSION}.tar.gz"
+            # Try without 'v' prefix
+            SOURCE_URL="${FORGEURL}/archive/${VERSION}.tar.gz"
+            HTTP_CHECK=$(curl -s -o /dev/null -w "%{http_code}" -L -I "$SOURCE_URL" 2>/dev/null || echo "000")
+
+            if [ "$HTTP_CHECK" != "200" ] && [ "$HTTP_CHECK" != "302" ]; then
+                # Try refs/tags/ format
+                SOURCE_URL="${FORGEURL}/archive/refs/tags/${VERSION}.tar.gz"
+            fi
         fi
     fi
 else

@@ -2,16 +2,18 @@
 set -e
 
 # Script to update RPM spec file with new version
-# Usage: update-spec.sh <spec_dir> <package_name> <new_version> <new_tag>
+# Usage: update-spec.sh <spec_dir> <package_name> <new_version> <new_tag> [commit <short_commit>]
 
 SPEC_DIR="$1"
 PACKAGE_NAME="$2"
 NEW_VERSION="$3"
 NEW_TAG="$4"
+MODE="${5:-release}"
+SHORT_COMMIT="${6:-}"
 
 if [ -z "$SPEC_DIR" ] || [ -z "$PACKAGE_NAME" ] || [ -z "$NEW_VERSION" ] || [ -z "$NEW_TAG" ]; then
     echo "Error: Missing required arguments"
-    echo "Usage: $0 <spec_dir> <package_name> <new_version> <new_tag>"
+    echo "Usage: $0 <spec_dir> <package_name> <new_version> <new_tag> [commit <short_commit>]"
     exit 1
 fi
 
@@ -25,17 +27,46 @@ fi
 echo "Updating spec file: $SPEC_FILE"
 echo "Package: $PACKAGE_NAME"
 echo "New version: $NEW_VERSION"
-echo "New tag: $NEW_TAG"
+echo "Mode: $MODE"
 
-# Update Version field
-echo "Updating Version field..."
-sed -i "s/^Version:\s*.*/Version:        ${NEW_VERSION}/" "$SPEC_FILE"
+if [ "$MODE" = "commit" ]; then
+    FULL_COMMIT="$NEW_TAG"
+    echo "Commit: $FULL_COMMIT (short: $SHORT_COMMIT)"
 
-# Update Source0 URL to use new tag
-# Pattern handles: /archive/v1.0.0/ or /archive/refs/tags/v1.0.0/
-echo "Updating Source0 URL..."
-sed -i "s|/archive/[^/]*/|/archive/${NEW_TAG}/|g" "$SPEC_FILE"
-sed -i "s|/archive/refs/tags/[^/]*/|/archive/refs/tags/${NEW_TAG}/|g" "$SPEC_FILE"
+    # Update or insert %global commit
+    if grep -q '^%global commit ' "$SPEC_FILE"; then
+        sed -i "s/^%global commit .*/%global commit ${FULL_COMMIT}/" "$SPEC_FILE"
+    elif grep -q '^%global forgeurl' "$SPEC_FILE"; then
+        sed -i "/^%global forgeurl/a %global commit ${FULL_COMMIT}" "$SPEC_FILE"
+    else
+        sed -i "1i %global commit ${FULL_COMMIT}" "$SPEC_FILE"
+    fi
+
+    # Update or insert %global shortcommit
+    if grep -q '^%global shortcommit ' "$SPEC_FILE"; then
+        sed -i "s/^%global shortcommit .*/%global shortcommit ${SHORT_COMMIT}/" "$SPEC_FILE"
+    elif grep -q '^%global commit ' "$SPEC_FILE"; then
+        sed -i "/^%global commit/a %global shortcommit ${SHORT_COMMIT}" "$SPEC_FILE"
+    fi
+
+    # Update Version field
+    sed -i "s/^Version:\s*.*/Version:        ${NEW_VERSION}/" "$SPEC_FILE"
+
+    # Do NOT update Source0 — forgesource + commit macro handles it for
+    # driver packages, and firmware packages have static source URLs
+else
+    echo "New tag: $NEW_TAG"
+
+    # Update Version field
+    echo "Updating Version field..."
+    sed -i "s/^Version:\s*.*/Version:        ${NEW_VERSION}/" "$SPEC_FILE"
+
+    # Update Source0 URL to use new tag
+    # Pattern handles: /archive/v1.0.0/ or /archive/refs/tags/v1.0.0/
+    echo "Updating Source0 URL..."
+    sed -i "s|/archive/[^/]*/|/archive/${NEW_TAG}/|g" "$SPEC_FILE"
+    sed -i "s|/archive/refs/tags/[^/]*/|/archive/refs/tags/${NEW_TAG}/|g" "$SPEC_FILE"
+fi
 
 # Add changelog entry manually (rpmdev-bumpspec not available on Ubuntu)
 echo "Adding changelog entry..."

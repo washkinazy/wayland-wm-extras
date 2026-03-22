@@ -15,6 +15,11 @@ on:
         required: true
         type: string
         description: 'Directory containing the spec file'
+      track_branch:
+        required: false
+        type: string
+        default: ''
+        description: 'Branch to track commits on (empty = track releases/tags)'
     secrets:
       PAT_TOKEN:
         required: true
@@ -38,37 +43,88 @@ jobs:
           sudo wget -qO /usr/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
           sudo chmod +x /usr/bin/yq
 
-      - name: Get latest upstream release
+      - name: Get latest upstream version
         id: upstream
         run: |
-          echo "Checking for latest release of ${{ inputs.upstream_repo }}"
+          TRACK_BRANCH="${{ inputs.track_branch }}"
 
-          # Try to get latest release from GitHub API
-          RELEASE_DATA=$(curl -s "https://api.github.com/repos/${{ inputs.upstream_repo }}/releases/latest")
-          TAG=$(echo "$RELEASE_DATA" | jq -r '.tag_name')
+          if [ -n "$TRACK_BRANCH" ]; then
+            echo "Tracking branch '$TRACK_BRANCH' of ${{ inputs.upstream_repo }}"
 
-          # If no release found, fall back to latest tag
-          if [ -z "$TAG" ] || [ "$TAG" = "null" ]; then
-            echo "No releases found, checking for tags..."
-            TAG_DATA=$(curl -s "https://api.github.com/repos/${{ inputs.upstream_repo }}/tags")
-            TAG=$(echo "$TAG_DATA" | jq -r '.[0].name')
+            # Get latest commit on the tracked branch
+            COMMIT_DATA=$(curl -s "https://api.github.com/repos/${{ inputs.upstream_repo }}/commits/${TRACK_BRANCH}")
+            FULL_SHA=$(echo "$COMMIT_DATA" | jq -r '.sha')
+            SHORT_SHA=$(echo "$FULL_SHA" | cut -c1-7)
 
-            if [ -z "$TAG" ] || [ "$TAG" = "null" ]; then
-              echo "Error: Could not fetch latest release or tag"
+            if [ -z "$FULL_SHA" ] || [ "$FULL_SHA" = "null" ]; then
+              echo "Error: Could not fetch latest commit on branch $TRACK_BRANCH"
               exit 1
             fi
 
-            echo "Using latest tag: $TAG"
+            # Get the most recent tag to build a describe-style version
+            TAGS_DATA=$(curl -s "https://api.github.com/repos/${{ inputs.upstream_repo }}/tags?per_page=1")
+            LATEST_TAG=$(echo "$TAGS_DATA" | jq -r '.[0].name')
+            TAG_SHA=$(echo "$TAGS_DATA" | jq -r '.[0].commit.sha')
+
+            if [ -z "$LATEST_TAG" ] || [ "$LATEST_TAG" = "null" ]; then
+              # No tags at all, use bare commit version
+              VERSION="0^git${SHORT_SHA}"
+            else
+              BASE_VERSION=$(echo "$LATEST_TAG" | sed 's/^v//')
+
+              if [ "$TAG_SHA" = "$FULL_SHA" ]; then
+                # HEAD is exactly at the tag
+                VERSION="${BASE_VERSION}^git${SHORT_SHA}"
+              else
+                # Count commits between tag and HEAD
+                COMPARE_DATA=$(curl -s "https://api.github.com/repos/${{ inputs.upstream_repo }}/compare/${LATEST_TAG}...${TRACK_BRANCH}")
+                AHEAD_BY=$(echo "$COMPARE_DATA" | jq -r '.ahead_by')
+
+                if [ -z "$AHEAD_BY" ] || [ "$AHEAD_BY" = "null" ]; then
+                  AHEAD_BY=0
+                fi
+
+                VERSION="${BASE_VERSION}^${AHEAD_BY}.git${SHORT_SHA}"
+              fi
+            fi
+
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "tag=$FULL_SHA" >> $GITHUB_OUTPUT
+            echo "commit=$FULL_SHA" >> $GITHUB_OUTPUT
+            echo "short_commit=$SHORT_SHA" >> $GITHUB_OUTPUT
+            echo "mode=commit" >> $GITHUB_OUTPUT
+            echo "Latest commit: $SHORT_SHA, version: $VERSION"
           else
-            echo "Using latest release: $TAG"
+            echo "Checking for latest release of ${{ inputs.upstream_repo }}"
+
+            # Try to get latest release from GitHub API
+            RELEASE_DATA=$(curl -s "https://api.github.com/repos/${{ inputs.upstream_repo }}/releases/latest")
+            TAG=$(echo "$RELEASE_DATA" | jq -r '.tag_name')
+
+            # If no release found, fall back to latest tag
+            if [ -z "$TAG" ] || [ "$TAG" = "null" ]; then
+              echo "No releases found, checking for tags..."
+              TAG_DATA=$(curl -s "https://api.github.com/repos/${{ inputs.upstream_repo }}/tags")
+              TAG=$(echo "$TAG_DATA" | jq -r '.[0].name')
+
+              if [ -z "$TAG" ] || [ "$TAG" = "null" ]; then
+                echo "Error: Could not fetch latest release or tag"
+                exit 1
+              fi
+
+              echo "Using latest tag: $TAG"
+            else
+              echo "Using latest release: $TAG"
+            fi
+
+            # Strip leading 'v' from version
+            VERSION=$(echo "$TAG" | sed 's/^v//')
+
+            echo "tag=$TAG" >> $GITHUB_OUTPUT
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "mode=release" >> $GITHUB_OUTPUT
+            echo "Latest version: $TAG (version: $VERSION)"
           fi
-
-          # Strip leading 'v' from version
-          VERSION=$(echo "$TAG" | sed 's/^v//')
-
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Latest version: $TAG (version: $VERSION)"
 
       - name: Get current spec version
         id: current
@@ -111,11 +167,21 @@ jobs:
       - name: Update spec file
         if: steps.compare.outputs.update_needed == 'true'
         run: |
-          .github/scripts/update-spec.sh \
-            "${{ inputs.spec_dir }}" \
-            "${{ inputs.package_name }}" \
-            "${{ steps.upstream.outputs.version }}" \
-            "${{ steps.upstream.outputs.tag }}"
+          if [ "${{ steps.upstream.outputs.mode }}" = "commit" ]; then
+            .github/scripts/update-spec.sh \
+              "${{ inputs.spec_dir }}" \
+              "${{ inputs.package_name }}" \
+              "${{ steps.upstream.outputs.version }}" \
+              "${{ steps.upstream.outputs.tag }}" \
+              "commit" \
+              "${{ steps.upstream.outputs.short_commit }}"
+          else
+            .github/scripts/update-spec.sh \
+              "${{ inputs.spec_dir }}" \
+              "${{ inputs.package_name }}" \
+              "${{ steps.upstream.outputs.version }}" \
+              "${{ steps.upstream.outputs.tag }}"
+          fi
 
       - name: Validate spec file
         if: steps.compare.outputs.update_needed == 'true'
@@ -145,13 +211,12 @@ jobs:
             **Package:** ${{ inputs.package_name }}
             **Current Version:** ${{ steps.current.outputs.version }}
             **New Version:** ${{ steps.upstream.outputs.version }}
-            **Upstream Release:** https://github.com/${{ inputs.upstream_repo }}/releases/tag/${{ steps.upstream.outputs.tag }}
+            **Upstream:** https://github.com/${{ inputs.upstream_repo }}/commit/${{ steps.upstream.outputs.tag }}
 
             This PR was automatically generated by the package monitoring system.
 
             ### Changes
             - Updated Version field to ${{ steps.upstream.outputs.version }}
-            - Updated Source0 URL to use tag ${{ steps.upstream.outputs.tag }}
             - Added changelog entry
 
             ### Validation
@@ -160,7 +225,7 @@ jobs:
 
             ---
             *This PR will be automatically merged after validation.*
-          branch: auto-update/${{ inputs.package_name }}-${{ steps.upstream.outputs.version }}
+          branch: auto-update/${{ inputs.package_name }}-${{ steps.upstream.outputs.short_commit || steps.upstream.outputs.version }}
           delete-branch: true
           labels: |
             automated
@@ -191,7 +256,7 @@ jobs:
 
                 # Update branch before retry
                 git fetch origin main
-                git -C /tmp checkout auto-update/${{ inputs.package_name }}-${{ steps.upstream.outputs.version }} 2>/dev/null || true
+                git -C /tmp checkout auto-update/${{ inputs.package_name }}-${{ steps.upstream.outputs.short_commit || steps.upstream.outputs.version }} 2>/dev/null || true
               else
                 echo "Failed to merge after $MAX_RETRIES attempts"
                 exit 1
