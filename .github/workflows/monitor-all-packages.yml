@@ -52,5 +52,6 @@ jobs:
       package_name: ${{ matrix.package.name }}
       upstream_repo: ${{ matrix.package.repo }}
       spec_dir: ${{ matrix.package.spec_dir }}
+      track_branch: ${{ matrix.package.track || '' }}
     secrets:
       PAT_TOKEN: ${{ secrets.PAT_TOKEN }}

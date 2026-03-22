@@ -78,3 +78,13 @@ packages:
   - name: nerd-fonts-cascadiacode
     repo: ryanoasis/nerd-fonts
     spec_dir: nerd-fonts-cascadiacode
+
+  - name: xone
+    repo: dlundqvist/xone
+    spec_dir: xone
+    track: master
+
+  - name: xone-firmware
+    repo: dlundqvist/xone
+    spec_dir: xone-firmware
+    track: master
