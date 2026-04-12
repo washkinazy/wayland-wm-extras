@@ -3,9 +3,9 @@
 %global tag %{version}
 
 Name:           regreet
-Version:        0.2.0
+Version:        0.3.0
 %forgemeta
-Release:        2%{?dist}
+Release:        1%{?dist}
 Summary:        Clean and customizable greeter for greetd
 
 License:        GPL-3.0-or-later
@@ -56,6 +56,9 @@ install -Dm644 %{SOURCE2} %{buildroot}%{_tmpfilesdir}/regreet.conf
 %{_tmpfilesdir}/regreet.conf
 
 %changelog
+* Sun Apr 12 2026 Automated Update <noreply@github.com> - 0.3.0-1
+- Update to 0.3.0
+
 * Tue Nov 05 2024 Washkinazy <noreply@github.com> - 0.2.0-2
 - Fix tmpfiles configuration to use 'greetd' user (Fedora convention) instead of 'greeter' (Arch convention)
 - Add Requires(pre) for greetd to ensure user exists before package installation
