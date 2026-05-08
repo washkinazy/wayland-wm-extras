@@ -2,9 +2,9 @@
 %global forgeurl https://github.com/nwg-piotr/nwg-look
 
 Name:           nwg-look
-Version:        1.0.6
+Version:        1.1.1
 %forgemeta
-Release:        2%{?dist}
+Release:        1%{?dist}
 Summary:        GTK3 settings editor for Wayland compositors
 
 License:        MIT
@@ -66,6 +66,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/nwg-look.desktop
 %{_datadir}/pixmaps/nwg-look.svg
 
 %changelog
+* Fri May 08 2026 Automated Update <noreply@github.com> - 1.1.1-1
+- Update to 1.1.1
+
 * Wed Jan 08 2025 Washkinazy <noreply@github.com> - 1.0.6-2
 - Add git-core BuildRequires for Go module fetching
 
