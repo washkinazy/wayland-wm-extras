@@ -3,7 +3,7 @@
 %global tag v%{version}
 
 Name:           ironbar
-Version:        0.18.0
+Version:        0.19.0
 %forgemeta
 Release:        1%{?dist}
 Summary:        Customizable GTK4 bar for Wayland compositors
@@ -48,5 +48,8 @@ install -Dm755 target/release/ironbar %{buildroot}%{_bindir}/ironbar
 %{_bindir}/ironbar
 
 %changelog
+* Mon May 18 2026 Automated Update <noreply@github.com> - 0.19.0-1
+- Update to 0.19.0
+
 * Thu Feb 12 2026 Automated Update <noreply@github.com> - 0.18.0-1
 - Initial package for version 0.18.0
