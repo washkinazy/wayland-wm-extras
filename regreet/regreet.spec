@@ -3,7 +3,7 @@
 %global tag %{version}
 
 Name:           regreet
-Version:        0.4.0
+Version:        0.5.0
 %forgemeta
 Release:        1%{?dist}
 Summary:        Clean and customizable greeter for greetd
@@ -56,6 +56,9 @@ install -Dm644 %{SOURCE2} %{buildroot}%{_tmpfilesdir}/regreet.conf
 %{_tmpfilesdir}/regreet.conf
 
 %changelog
+* Sat Jul 18 2026 Automated Update <noreply@github.com> - 0.5.0-1
+- Update to 0.5.0
+
 * Sun May 31 2026 Automated Update <noreply@github.com> - 0.4.0-1
 - Update to 0.4.0
 
