@@ -2,8 +2,8 @@
 %global forgeurl https://github.com/ryanoasis/nerd-fonts
 
 Name:           nerd-fonts-jetbrainsmono
-Version:        3.4.0
-Release:        2%{?dist}
+Version:        3.5.0
+Release:        1%{?dist}
 Summary:        JetBrains Mono font patched with programming glyphs from Nerd Fonts
 
 BuildArch:      noarch
@@ -38,6 +38,9 @@ install -m 0644 *.otf %{buildroot}%{_datadir}/fonts/%{name}/ || true
 %{_datadir}/fonts/%{name}/
 
 %changelog
+* Mon Aug 03 2026 Automated Update <noreply@github.com> - 3.5.0-1
+- Update to 3.5.0
+
 * Wed Jan 08 2025 Washkinazy <noreply@github.com> - 3.4.0-2
 - Add unzip BuildRequires
 - Add fontconfig Requires for proper font cache handling
