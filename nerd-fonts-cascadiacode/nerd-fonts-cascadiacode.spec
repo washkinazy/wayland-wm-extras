@@ -2,7 +2,7 @@
 %global forgeurl https://github.com/ryanoasis/nerd-fonts
 
 Name:           nerd-fonts-cascadiacode
-Version:        3.5.0
+Version:        3.5.1
 Release:        1%{?dist}
 Summary:        Cascadia Code font patched with programming glyphs from Nerd Fonts
 
@@ -39,6 +39,9 @@ install -m 0644 *.otf %{buildroot}%{_datadir}/fonts/%{name}/ || true
 %{_datadir}/fonts/%{name}/
 
 %changelog
+* Sat Aug 22 2026 Automated Update <noreply@github.com> - 3.5.1-1
+- Update to 3.5.1
+
 * Mon Aug 03 2026 Automated Update <noreply@github.com> - 3.5.0-1
 - Update to 3.5.0
 
