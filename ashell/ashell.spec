@@ -3,7 +3,7 @@
 %global tag %{version}
 
 Name:           ashell
-Version:        0.9.0
+Version:        0.10.0
 %forgemeta
 Release:        1%{?dist}
 Summary:        A ready to go Wayland status bar for Hyprland and Niri
@@ -49,6 +49,9 @@ install -Dm755 target/release/ashell %{buildroot}%{_bindir}/ashell
 %{_bindir}/ashell
 
 %changelog
+* Wed Sep 02 2026 Automated Update <noreply@github.com> - 0.10.0-1
+- Update to 0.10.0
+
 * Tue Jun 09 2026 Automated Update <noreply@github.com> - 0.9.0-1
 - Update to 0.9.0
 
