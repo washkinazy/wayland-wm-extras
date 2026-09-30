@@ -2,7 +2,7 @@
 %global forgeurl https://github.com/nwg-piotr/nwg-look
 
 Name:           nwg-look
-Version:        1.1.1
+Version:        1.1.2
 %forgemeta
 Release:        1%{?dist}
 Summary:        GTK3 settings editor for Wayland compositors
@@ -66,6 +66,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/nwg-look.desktop
 %{_datadir}/pixmaps/nwg-look.svg
 
 %changelog
+* Wed Sep 30 2026 Automated Update <noreply@github.com> - 1.1.2-1
+- Update to 1.1.2
+
 * Fri May 08 2026 Automated Update <noreply@github.com> - 1.1.1-1
 - Update to 1.1.1
 
