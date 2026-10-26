@@ -6,272 +6,66 @@ on:
       package_name:
         required: true
         type: string
-        description: 'Package name'
-      upstream_repo:
-        required: true
-        type: string
-        description: 'Upstream GitHub repository (owner/repo)'
-      spec_dir:
-        required: true
-        type: string
-        description: 'Directory containing the spec file'
-      track_branch:
-        required: false
-        type: string
-        default: ''
-        description: 'Branch to track commits on (empty = track releases/tags)'
+      force_update:
+        type: boolean
+        default: false
     secrets:
       PAT_TOKEN:
         required: true
-        description: 'GitHub PAT with repo and workflow scopes'
+        description: 'Fine-grained token with contents and pull requests write access'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: update-${{ inputs.package_name }}
+  cancel-in-progress: false
 
 jobs:
-  check-and-update:
+  update:
     runs-on: ubuntu-latest
+    container: registry.fedoraproject.org/fedora:44
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Install Fedora tooling
+        run: dnf install -y git gh python3-rpm python3-pyyaml rpm-build redhat-rpm-config python3-devel pyproject-rpm-macros cargo-rpm-macros systemd-rpm-macros meson curl
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          token: ${{ secrets.PAT_TOKEN }}
-
-      - name: Install dependencies
+          ref: main
+          persist-credentials: false
+      - name: Discover and apply update
+        id: update
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PACKAGE: ${{ inputs.package_name }}
+          FORCE: ${{ inputs.force_update }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y rpm jq curl
-
-          # Install yq for YAML parsing
-          sudo wget -qO /usr/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          sudo chmod +x /usr/bin/yq
-
-      - name: Get latest upstream version
-        id: upstream
+          args=()
+          if [ "$FORCE" = true ]; then args+=(--force); fi
+          python3 .github/scripts/packages.py update "$PACKAGE" "${args[@]}"
+        shell: bash
+      - name: Validate spec and exact sources
+        if: steps.update.outputs.changed == 'true'
+        env:
+          PACKAGE: ${{ inputs.package_name }}
         run: |
-          TRACK_BRANCH="${{ inputs.track_branch }}"
-
-          if [ -n "$TRACK_BRANCH" ]; then
-            echo "Tracking branch '$TRACK_BRANCH' of ${{ inputs.upstream_repo }}"
-
-            # Get latest commit on the tracked branch
-            COMMIT_DATA=$(curl -s "https://api.github.com/repos/${{ inputs.upstream_repo }}/commits/${TRACK_BRANCH}")
-            FULL_SHA=$(echo "$COMMIT_DATA" | jq -r '.sha')
-            SHORT_SHA=$(echo "$FULL_SHA" | cut -c1-7)
-
-            if [ -z "$FULL_SHA" ] || [ "$FULL_SHA" = "null" ]; then
-              echo "Error: Could not fetch latest commit on branch $TRACK_BRANCH"
-              exit 1
-            fi
-
-            # Get the most recent tag to build a describe-style version
-            TAGS_DATA=$(curl -s "https://api.github.com/repos/${{ inputs.upstream_repo }}/tags?per_page=1")
-            LATEST_TAG=$(echo "$TAGS_DATA" | jq -r '.[0].name')
-            TAG_SHA=$(echo "$TAGS_DATA" | jq -r '.[0].commit.sha')
-
-            if [ -z "$LATEST_TAG" ] || [ "$LATEST_TAG" = "null" ]; then
-              # No tags at all, use bare commit version
-              VERSION="0^git${SHORT_SHA}"
-            else
-              BASE_VERSION=$(echo "$LATEST_TAG" | sed 's/^v//')
-
-              if [ "$TAG_SHA" = "$FULL_SHA" ]; then
-                # HEAD is exactly at the tag
-                VERSION="${BASE_VERSION}^git${SHORT_SHA}"
-              else
-                # Count commits between tag and HEAD
-                COMPARE_DATA=$(curl -s "https://api.github.com/repos/${{ inputs.upstream_repo }}/compare/${LATEST_TAG}...${TRACK_BRANCH}")
-                AHEAD_BY=$(echo "$COMPARE_DATA" | jq -r '.ahead_by')
-
-                if [ -z "$AHEAD_BY" ] || [ "$AHEAD_BY" = "null" ]; then
-                  AHEAD_BY=0
-                fi
-
-                VERSION="${BASE_VERSION}^${AHEAD_BY}.git${SHORT_SHA}"
-              fi
-            fi
-
-            echo "version=$VERSION" >> $GITHUB_OUTPUT
-            echo "tag=$FULL_SHA" >> $GITHUB_OUTPUT
-            echo "commit=$FULL_SHA" >> $GITHUB_OUTPUT
-            echo "short_commit=$SHORT_SHA" >> $GITHUB_OUTPUT
-            echo "mode=commit" >> $GITHUB_OUTPUT
-            echo "Latest commit: $SHORT_SHA, version: $VERSION"
-          else
-            echo "Checking for latest release of ${{ inputs.upstream_repo }}"
-
-            # Try to get latest release from GitHub API
-            RELEASE_DATA=$(curl -s "https://api.github.com/repos/${{ inputs.upstream_repo }}/releases/latest")
-            TAG=$(echo "$RELEASE_DATA" | jq -r '.tag_name')
-
-            # If no release found, fall back to latest tag
-            if [ -z "$TAG" ] || [ "$TAG" = "null" ]; then
-              echo "No releases found, checking for tags..."
-              TAG_DATA=$(curl -s "https://api.github.com/repos/${{ inputs.upstream_repo }}/tags")
-              TAG=$(echo "$TAG_DATA" | jq -r '.[0].name')
-
-              if [ -z "$TAG" ] || [ "$TAG" = "null" ]; then
-                echo "Error: Could not fetch latest release or tag"
-                exit 1
-              fi
-
-              echo "Using latest tag: $TAG"
-            else
-              echo "Using latest release: $TAG"
-            fi
-
-            # Strip leading 'v' from version
-            VERSION=$(echo "$TAG" | sed 's/^v//')
-
-            echo "tag=$TAG" >> $GITHUB_OUTPUT
-            echo "version=$VERSION" >> $GITHUB_OUTPUT
-            echo "mode=release" >> $GITHUB_OUTPUT
-            echo "Latest version: $TAG (version: $VERSION)"
-          fi
-
-      - name: Get current spec version
-        id: current
-        run: |
-          SPEC_FILE="${{ inputs.spec_dir }}/${{ inputs.package_name }}.spec"
-
-          if [ ! -f "$SPEC_FILE" ]; then
-            echo "Error: Spec file not found: $SPEC_FILE"
-            exit 1
-          fi
-
-          # Extract version using grep/awk (rpmspec not available on Ubuntu)
-          CURRENT_VERSION=$(grep "^Version:" "$SPEC_FILE" | head -1 | awk '{print $2}')
-
-          # Handle empty VERSION (might be using %forgemeta or other macros)
-          if [ -z "$CURRENT_VERSION" ] || [ "$CURRENT_VERSION" = "%{version}" ]; then
-              CURRENT_VERSION=$(grep -E "^Version:|%global.*version" "$SPEC_FILE" | grep -v forgemeta | head -1 | awk '{print $NF}')
-          fi
-
-          echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
-          echo "Current version in spec: $CURRENT_VERSION"
-
-      - name: Compare versions
-        id: compare
-        run: |
-          CURRENT="${{ steps.current.outputs.version }}"
-          LATEST="${{ steps.upstream.outputs.version }}"
-
-          echo "Current: $CURRENT"
-          echo "Latest:  $LATEST"
-
-          if [ "$CURRENT" = "$LATEST" ]; then
-            echo "update_needed=false" >> $GITHUB_OUTPUT
-            echo "Package is already up to date"
-          else
-            echo "update_needed=true" >> $GITHUB_OUTPUT
-            echo "Update available: $CURRENT -> $LATEST"
-          fi
-
-      - name: Update spec file
-        if: steps.compare.outputs.update_needed == 'true'
-        run: |
-          if [ "${{ steps.upstream.outputs.mode }}" = "commit" ]; then
-            .github/scripts/update-spec.sh \
-              "${{ inputs.spec_dir }}" \
-              "${{ inputs.package_name }}" \
-              "${{ steps.upstream.outputs.version }}" \
-              "${{ steps.upstream.outputs.tag }}" \
-              "commit" \
-              "${{ steps.upstream.outputs.short_commit }}"
-          else
-            .github/scripts/update-spec.sh \
-              "${{ inputs.spec_dir }}" \
-              "${{ inputs.package_name }}" \
-              "${{ steps.upstream.outputs.version }}" \
-              "${{ steps.upstream.outputs.tag }}"
-          fi
-
-      - name: Validate spec file
-        if: steps.compare.outputs.update_needed == 'true'
-        run: |
-          .github/scripts/validate-spec.sh \
-            "${{ inputs.spec_dir }}" \
-            "${{ inputs.package_name }}"
-
-      - name: Check source accessibility
-        if: steps.compare.outputs.update_needed == 'true'
-        run: |
-          .github/scripts/check-source.sh \
-            "${{ inputs.spec_dir }}" \
-            "${{ inputs.package_name }}"
-
-      - name: Create Pull Request
-        if: steps.compare.outputs.update_needed == 'true'
-        uses: peter-evans/create-pull-request@v5
-        id: cpr
-        with:
-          token: ${{ secrets.PAT_TOKEN }}
-          commit-message: "chore: update ${{ inputs.package_name }} to ${{ steps.upstream.outputs.version }}"
-          title: "chore: update ${{ inputs.package_name }} to ${{ steps.upstream.outputs.version }}"
-          body: |
-            ## Automated Package Update
-
-            **Package:** ${{ inputs.package_name }}
-            **Current Version:** ${{ steps.current.outputs.version }}
-            **New Version:** ${{ steps.upstream.outputs.version }}
-            **Upstream:** https://github.com/${{ inputs.upstream_repo }}/commit/${{ steps.upstream.outputs.tag }}
-
-            This PR was automatically generated by the package monitoring system.
-
-            ### Changes
-            - Updated Version field to ${{ steps.upstream.outputs.version }}
-            - Added changelog entry
-
-            ### Validation
-            - [x] Spec file syntax validated
-            - [x] Source tarball accessibility checked
-
-            ---
-            *This PR will be automatically merged after validation.*
-          branch: auto-update/${{ inputs.package_name }}-${{ steps.upstream.outputs.short_commit || steps.upstream.outputs.version }}
-          delete-branch: true
-          labels: |
-            automated
-            version-update
-            ${{ inputs.package_name }}
-
-      - name: Merge Pull Request
-        if: steps.compare.outputs.update_needed == 'true' && steps.cpr.outputs.pull-request-number != ''
-        run: |
-          # Wait a moment for PR to be fully created
-          sleep 2
-
-          # Retry merge up to 5 times with exponential backoff to handle concurrent PR merges
-          MAX_RETRIES=5
-          RETRY_COUNT=0
-          MERGED=false
-
-          while [ $RETRY_COUNT -lt $MAX_RETRIES ] && [ "$MERGED" = "false" ]; do
-            if gh pr merge ${{ steps.cpr.outputs.pull-request-number }} --squash --delete-branch --admin; then
-              MERGED=true
-              echo "PR merged successfully"
-            else
-              RETRY_COUNT=$((RETRY_COUNT + 1))
-              if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
-                WAIT_TIME=$((2 ** RETRY_COUNT))
-                echo "Merge failed, retrying in ${WAIT_TIME}s (attempt $((RETRY_COUNT + 1))/$MAX_RETRIES)..."
-                sleep $WAIT_TIME
-
-                # Update branch before retry
-                git fetch origin main
-                git -C /tmp checkout auto-update/${{ inputs.package_name }}-${{ steps.upstream.outputs.short_commit || steps.upstream.outputs.version }} 2>/dev/null || true
-              else
-                echo "Failed to merge after $MAX_RETRIES attempts"
-                exit 1
-              fi
-            fi
-          done
+          bash .github/scripts/validate-spec.sh "$PACKAGE" "$PACKAGE"
+          bash .github/scripts/check-source.sh "$PACKAGE" "$PACKAGE"
+      - name: Open or update pull request
+        if: steps.update.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
-
+          PACKAGE: ${{ inputs.package_name }}
+          VERSION: ${{ steps.update.outputs.version }}
+          PREVIOUS: ${{ steps.update.outputs.previous }}
+        run: bash .github/scripts/open-update-pr.sh
       - name: Summary
-        if: always()
+        if: success()
+        env:
+          CHANGED: ${{ steps.update.outputs.changed }}
+          PACKAGE: ${{ inputs.package_name }}
         run: |
-          if [ "${{ steps.compare.outputs.update_needed }}" = "true" ]; then
-            echo "[SUCCESS] Update PR created for ${{ inputs.package_name }}"
-            echo "[INFO] Version: ${{ steps.current.outputs.version }} -> ${{ steps.upstream.outputs.version }}"
+          if [ "$CHANGED" = true ]; then
+            echo "Update PR prepared for $PACKAGE; build checks and review are required." >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "[OK] ${{ inputs.package_name }} is up to date (${{ steps.current.outputs.version }})"
+            echo "No newer upstream revision for $PACKAGE." >> "$GITHUB_STEP_SUMMARY"
           fi

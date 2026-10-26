@@ -1,88 +1,89 @@
 # wayland-wm-extras
 
-A collection fonts, tools and utilities that I use in my Fedora Systems. 
+RPM packaging for fonts, tools, and utilities used on Fedora Wayland systems.
+Packages are published through the `washkinazy/wayland-wm-extras` COPR.
 
-QOL for me so I don't need to manually compile, build and copy around fonts.
+## Packages and installation
 
-## Packages
-
-- **[Elephant](https://github.com/abenz1267/elephant)** [(spec)](elephant/elephant.spec)
-- **[Walker](https://github.com/abenz1267/walker)** [(spec)](walker/walker.spec)
-- **[ReGreet](https://github.com/rharish101/ReGreet)** [(spec)](regreet/regreet.spec)
-- **[SwayOSD](https://github.com/ErikReider/SwayOSD)** [(spec)](swayosd/swayosd.spec)
-- **[gtk-session-lock](https://github.com/Cu3PO42/gtk-session-lock)** [(spec)](gtk-session-lock/gtk-session-lock.spec)
-- **[gtklock](https://github.com/jovanlanik/gtklock)** [(spec)](gtklock/gtklock.spec)
-- **[gtklock-playerctl-module](https://github.com/jovanlanik/gtklock-playerctl-module)** [(spec)](gtklock-playerctl-module/gtklock-playerctl-module.spec)
-- **[gtklock-powerbar-module](https://github.com/jovanlanik/gtklock-powerbar-module)** [(spec)](gtklock-powerbar-module/gtklock-powerbar-module.spec)
-- **[gtklock-userinfo-module](https://github.com/jovanlanik/gtklock-userinfo-module)** [(spec)](gtklock-userinfo-module/gtklock-userinfo-module.spec)
-- **[nwg-look](https://github.com/nwg-piotr/nwg-look)** [(spec)](nwg-look/nwg-look.spec)
-- **[sway-audio-idle-inhibit](https://github.com/ErikReider/SwayAudioIdleInhibit)** [(spec)](sway-audio-idle-inhibit/sway-audio-idle-inhibit.spec)
-- **[python-screeninfo](https://github.com/rr-/screeninfo)** [(spec)](python-screeninfo/python-screeninfo.spec)
-- **[python-imageio-ffmpeg](https://github.com/imageio/imageio-ffmpeg)** [(spec)](python-imageio-ffmpeg/python-imageio-ffmpeg.spec)
-- **[waypaper](https://github.com/anufrievroman/waypaper)** [(spec)](waypaper/waypaper.spec)
-- **[xcur2png](https://github.com/eworm-de/xcur2png)** [(spec)](xcur2png/xcur2png.spec)
-- **[Nerd Fonts - FiraCode](https://github.com/ryanoasis/nerd-fonts)** [(spec)](nerd-fonts-firacode/nerd-fonts-firacode.spec)
-- **[Nerd Fonts - JetBrainsMono](https://github.com/ryanoasis/nerd-fonts)** [(spec)](nerd-fonts-jetbrainsmono/nerd-fonts-jetbrainsmono.spec)
-- **[Nerd Fonts - CascadiaCode](https://github.com/ryanoasis/nerd-fonts)** [(spec)](nerd-fonts-cascadiacode/nerd-fonts-cascadiacode.spec)
-
-## Installation
+[packages.yml](packages.yml) is the authoritative package inventory. Each entry
+has a matching directory and spec file. Run `just list` for package names.
+Entries with `update: false` are maintained manually: `gtklock-meta` has no
+upstream payload, and `xone-firmware` changes only when its firmware payloads
+change, independently of the driver repository.
 
 ```bash
-# Enable the COPR repository
 sudo dnf copr enable washkinazy/wayland-wm-extras
-
-# Install packages
 sudo dnf install walker elephant gtklock
 ```
 
-## Automated Updates
+## Updates and validation
 
-This repository uses GitHub Actions to automatically monitor upstream releases and update packages:
+The daily workflow checks upstream releases at midnight UTC. The **Update Single
+Package** workflow accepts any automatically tracked package name in the
+inventory; invalid names fail before any update or write credentials are used.
+Both manual workflows support `force_update`, which increments `Release` when
+the upstream revision is unchanged. Older releases are never treated as updates.
+Unsupported tag formats fail explicitly for maintainer review.
 
-- **Daily monitoring**: Checks for new releases every day at midnight UTC
-- **Automatic spec updates**: Creates pull requests with updated spec files when new versions are detected
-- **Auto-merge**: PRs merge automatically once validation passes
-- **COPR webhook**: Merged changes trigger automatic rebuilds in COPR
-- **Manual trigger**: Updates can be triggered for individual packages via GitHub Actions UI
+Release packages use RPM version ordering. Branch-tracked packages compare the
+full commit SHA and use ordered timestamp snapshots under the current version
+base. When moving to a new upstream release base, update that base explicitly.
+The fallback for repositories without releases selects the greatest stable
+numeric version among the first 100 tags returned by GitHub.
 
-## Building
+Updates are parsed using Fedora's RPM macros. Every declared remote source and
+patch is downloaded from its exact expanded HTTPS URL; local sources and patches
+must exist inside the package directory. The updater maintains one PR branch per
+package and serializes overlapping updates to that package. It never merges PRs.
 
-All packages are built automatically in COPR. Builds are triggered:
-- Automatically via webhook when commits are pushed to main
-- When the automated update system merges PRs
-- Manually via COPR web interface
+Pull requests run:
+
+- Inventory consistency checks, regression tests, ShellCheck, and RPM parsing.
+- Mock builds of changed packages on Fedora 43 and 44. Changes to shared build
+  tooling, tests, or workflows rebuild all packages.
+- An aggregate **Package checks** status, suitable for a required check.
+
+Builds use the existing COPR as an additional dependency repository. If an update
+needs a dependency version not published there yet, its build will fail until the
+dependency is available. Network access is currently required for Rust/Go builds;
+Cargo builds require the upstream lockfile, and direct Go builds use read-only
+module resolution. This is not an offline or fully hermetic build system.
+
+Merged changes trigger COPR builds if the repository's COPR webhook is configured.
 
 ## Development
 
-### Using Distrobox
+Use the Fedora 44 dev container, or create a Distrobox environment:
 
-This repository uses distrobox for local development and testing:
+```bash
+just setup-44
+just enter 44
+# Re-enter after setup to activate mock group membership.
+just check
+just mock xcur2png
+```
 
-1. **Set up a Fedora container:**
-   ```bash
-   just setup-43           # Create Fedora 43 container
-   just enter 43           # Enter the container
-   sudo usermod -a -G mock $USER  # Add yourself to mock group (then re-enter)
-   ```
+The setup installs the Fedora RPM macros, Python RPM bindings, PyYAML, ShellCheck,
+and packaging tools. It does not change the host's global Mock networking policy.
+Build networking is enabled for the individual Mock invocation.
 
-2. **Enable network access in mock** (required for Rust/Go builds):
-   ```bash
-   sudo mkdir -p /etc/mock
-   echo "config_opts['use_host_resolv'] = True" | sudo tee -a /etc/mock/site-defaults.cfg
-   echo "config_opts['rpmbuild_networking'] = True" | sudo tee -a /etc/mock/site-defaults.cfg
-   ```
+```bash
+just mock elephant 43  # Isolated Mock build for one Fedora version
+just build walker     # Local rpmbuild; install BuildRequires yourself first
+just review gtklock
+just build-all 44
+just mock-all walker  # Fedora 43 and 44
+just build-matrix     # Every package on both versions
+just clean            # Remove only this repo's .build directory
+```
 
-3. **Build and test packages:**
-   ```bash
-   # Test build a package with mock
-   just mock elephant
+Each build creates a unique `.build/PACKAGE-fVERSION.XXXXXX` directory containing
+sources, the newly generated SRPM, results, and logs. Old SRPMs are never reused.
+Batch builds continue after failures and return a nonzero status if any build
+fails. The CI container uses Mock's simple chroot isolation inside a disposable
+privileged container; normal local builds use nspawn.
 
-   # Build with rpmbuild
-   just build walker
-
-   # Run fedora-review
-   just review gtklock
-
-   # Build all packages for all versions
-   just build-matrix
-   ```
+To run the updater locally, supply `GH_TOKEN` through your environment, then run
+`just update PACKAGE`. Review its diff and build the package before committing.
+For a forced rebuild use
+`python3 .github/scripts/packages.py update PACKAGE --force`.

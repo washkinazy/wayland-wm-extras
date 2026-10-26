@@ -4,7 +4,7 @@
 Name:           elephant
 Version:        2.22.1
 %forgemeta
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Data provider service for Walker launcher
 
 License:        GPL-3.0-or-later
@@ -30,7 +30,7 @@ clipboard history, and Bluetooth devices.
 %build
 # Build main binary
 cd cmd/elephant
-go build -buildvcs=false -trimpath -o elephant
+go build -buildvcs=false -trimpath -mod=readonly -o elephant
 cd ../..
 
 # Build all provider plugins
@@ -61,8 +61,8 @@ install -Dm755 _build/providers/*.so %{buildroot}%{_sysconfdir}/xdg/elephant/pro
 %{_sysconfdir}/xdg/elephant/providers/*.so
 
 %changelog
-* Fri Sep 25 2026 Automated Update <noreply@github.com> - 2.22.1-1
-- Update to 2.22.1
+* Sun Oct 25 2026 Washkinazy <noreply@github.com> - 2.22.0-2
+- Require read-only Go module resolution
 
 * Fri Jul 17 2026 Automated Update <noreply@github.com> - 2.22.0-1
 - Update to 2.22.0
@@ -124,18 +124,15 @@ install -Dm755 _build/providers/*.so %{buildroot}%{_sysconfdir}/xdg/elephant/pro
 * Fri Nov 07 2025 Automated Update <noreply@github.com> - 2.14.3-1
 - Update to 2.14.3
 
-* Wed Jan 08 2025 Manual Update <noreply@github.com> - 2.10.4-1
-- Temporary downgrade to 2.10.4 for Fedora 42 compatibility (Go 1.24.9)
-- Version 2.14.3+ requires Go 1.25.0+
-
 * Sat Nov 01 2025 Automated Update <noreply@github.com> - 2.10.4-1
 - Update to 2.10.4
 
 * Fri Oct 31 2025 Automated Update <noreply@github.com> - 2.9.3-1
 - Update to 2.9.3
 
-* Fri Oct 31 2025 Automated Update <noreply@github.com> - 2.9.3-1
-- Update to 2.9.3
+* Wed Jan 08 2025 Manual Update <noreply@github.com> - 2.10.4-1
+- Temporary downgrade to 2.10.4 for Fedora 42 compatibility (Go 1.24.9)
+- Version 2.14.3+ requires Go 1.25.0+
 
 * Sun Oct 27 2024 Your Name <your.email@example.com> - 2.7.7-1
 - Initial package for version 2.7.7

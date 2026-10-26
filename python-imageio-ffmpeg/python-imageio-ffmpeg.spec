@@ -3,7 +3,7 @@
 
 Name:           python-imageio-ffmpeg
 Version:        0.6.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        FFMPEG wrapper for Python
 
 License:        BSD-2-Clause
@@ -12,7 +12,6 @@ Source0:        %{forgeurl}/archive/v%{version}/imageio-ffmpeg-%{version}.tar.gz
 
 BuildArch:      noarch
 BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
 
 %global _description %{expand:
 FFMPEG wrapper for Python.}
@@ -28,18 +27,26 @@ Requires:       /usr/bin/ffmpeg
 %prep
 %autosetup -p1 -n imageio-ffmpeg-%{version}
 
+%generate_buildrequires
+%pyproject_buildrequires
+
 %build
-%py3_build
+%pyproject_wheel
 
 %install
-%py3_install
+%pyproject_install
+%pyproject_save_files imageio_ffmpeg
 
-%files -n python3-imageio-ffmpeg
+%check
+%pyproject_check_import
+
+%files -n python3-imageio-ffmpeg -f %{pyproject_files}
 %doc README.md
 %license LICENSE
-%{python3_sitelib}/imageio_ffmpeg-*.egg-info/
-%{python3_sitelib}/imageio_ffmpeg/
 
 %changelog
+* Sun Oct 25 2026 Washkinazy <noreply@github.com> - 0.6.0-2
+- Build with pyproject macros and check imports
+
 * Tue Nov 05 2024 Automated Update <noreply@github.com> - 0.6.0-1
 - Initial package for version 0.6.0

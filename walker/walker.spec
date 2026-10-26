@@ -4,7 +4,7 @@
 Name:           walker
 Version:        2.17.2
 %forgemeta
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Fast, customizable Wayland application launcher
 
 License:        GPL-3.0-or-later
@@ -40,7 +40,7 @@ applications, calculator, file browser, command runner, and clipboard history.
 
 %build
 # Build with online access to fetch dependencies from crates.io
-cargo build --release
+cargo build --release --locked
 
 %install
 install -Dm755 target/release/walker %{buildroot}%{_bindir}/walker
@@ -65,11 +65,8 @@ install -Dm644 resources/themes/default/*.css %{buildroot}%{_sysconfdir}/xdg/wal
 %{_sysconfdir}/xdg/walker/themes/default/*.css
 
 %changelog
-* Fri Oct 09 2026 Automated Update <noreply@github.com> - 2.17.2-1
-- Update to 2.17.2
-
-* Fri Sep 25 2026 Automated Update <noreply@github.com> - 2.17.1-1
-- Update to 2.17.1
+* Sun Oct 25 2026 Washkinazy <noreply@github.com> - 2.17.0-2
+- Require the upstream Cargo lockfile when building
 
 * Fri Jul 17 2026 Automated Update <noreply@github.com> - 2.17.0-1
 - Update to 2.17.0
@@ -130,9 +127,6 @@ install -Dm644 resources/themes/default/*.css %{buildroot}%{_sysconfdir}/xdg/wal
 
 * Sat Nov 01 2025 Automated Update <noreply@github.com> - 2.8.0-1
 - Update to 2.8.0
-
-* Fri Oct 31 2025 Automated Update <noreply@github.com> - 2.7.5-1
-- Update to 2.7.5
 
 * Fri Oct 31 2025 Automated Update <noreply@github.com> - 2.7.5-1
 - Update to 2.7.5

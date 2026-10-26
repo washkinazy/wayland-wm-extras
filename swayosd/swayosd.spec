@@ -5,7 +5,7 @@
 Name:           swayosd
 Version:        0.3.2
 %forgemeta
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A GTK based on screen display for keyboard shortcuts like caps-lock and volume
 
 License:        GPL-3.0-or-later
@@ -66,9 +66,9 @@ rm -f %{buildroot}/usr/share/licenses/swayosd/LICENSE
 %{_bindir}/swayosd-client
 %{_bindir}/swayosd-libinput-backend
 %{_bindir}/swayosd-server
-%{_sysconfdir}/xdg/swayosd/backend.toml
-%{_sysconfdir}/xdg/swayosd/config.toml
-%{_sysconfdir}/xdg/swayosd/style.css
+%config(noreplace) %{_sysconfdir}/xdg/swayosd/backend.toml
+%config(noreplace) %{_sysconfdir}/xdg/swayosd/config.toml
+%config(noreplace) %{_sysconfdir}/xdg/swayosd/style.css
 %{_unitdir}/swayosd-libinput-backend.service
 %{_libdir}/udev/rules.d/99-swayosd.rules
 %{_datadir}/dbus-1/system-services/org.erikreider.swayosd.service
@@ -77,6 +77,9 @@ rm -f %{buildroot}/usr/share/licenses/swayosd/LICENSE
 %{_datadir}/polkit-1/rules.d/org.erikreider.swayosd.rules
 
 %changelog
+* Sun Oct 25 2026 Washkinazy <noreply@github.com> - 0.3.2-2
+- Preserve administrator configuration during upgrades
+
 * Tue Jun 23 2026 Automated Update <noreply@github.com> - 0.3.2-1
 - Update to 0.3.2
 
@@ -85,12 +88,6 @@ rm -f %{buildroot}/usr/share/licenses/swayosd/LICENSE
 
 * Fri Jan 16 2026 Automated Update <noreply@github.com> - 0.3.0-1
 - Update to 0.3.0
-
-* Fri Oct 31 2025 Automated Update <noreply@github.com> - 0.2.1-1
-- Update to 0.2.1
-
-* Fri Oct 31 2025 Automated Update <noreply@github.com> - 0.2.1-1
-- Update to 0.2.1
 
 * Fri Oct 31 2025 Automated Update <noreply@github.com> - 0.2.1-1
 - Update to 0.2.1

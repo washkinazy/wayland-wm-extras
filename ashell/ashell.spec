@@ -5,7 +5,7 @@
 Name:           ashell
 Version:        0.11.0
 %forgemeta
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A ready to go Wayland status bar for Hyprland and Niri
 
 License:        MIT
@@ -38,7 +38,7 @@ Bluetooth connectivity, battery status, and a settings panel.
 %autosetup -n %{name}-%{version}
 
 %build
-cargo build --release
+cargo build --release --locked
 
 %install
 install -Dm755 target/release/ashell %{buildroot}%{_bindir}/ashell
@@ -49,8 +49,8 @@ install -Dm755 target/release/ashell %{buildroot}%{_bindir}/ashell
 %{_bindir}/ashell
 
 %changelog
-* Sat Oct 03 2026 Automated Update <noreply@github.com> - 0.11.0-1
-- Update to 0.11.0
+* Sun Oct 25 2026 Washkinazy <noreply@github.com> - 0.10.0-2
+- Require the upstream Cargo lockfile when building
 
 * Wed Sep 02 2026 Automated Update <noreply@github.com> - 0.10.0-1
 - Update to 0.10.0
