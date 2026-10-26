@@ -3,7 +3,7 @@
 %global tag %{version}
 
 Name:           ashell
-Version:        0.10.0
+Version:        0.11.0
 %forgemeta
 Release:        2%{?dist}
 Summary:        A ready to go Wayland status bar for Hyprland and Niri

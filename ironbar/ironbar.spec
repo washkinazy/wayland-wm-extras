@@ -3,7 +3,7 @@
 %global tag v%{version}
 
 Name:           ironbar
-Version:        0.19.0
+Version:        0.19.1
 %forgemeta
 Release:        2%{?dist}
 Summary:        Customizable GTK4 bar for Wayland compositors

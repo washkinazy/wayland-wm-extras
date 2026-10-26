@@ -2,7 +2,7 @@
 %global forgeurl https://github.com/abenz1267/walker
 
 Name:           walker
-Version:        2.17.0
+Version:        2.17.2
 %forgemeta
 Release:        2%{?dist}
 Summary:        Fast, customizable Wayland application launcher

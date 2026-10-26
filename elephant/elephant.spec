@@ -2,7 +2,7 @@
 %global forgeurl https://github.com/abenz1267/elephant
 
 Name:           elephant
-Version:        2.22.0
+Version:        2.22.1
 %forgemeta
 Release:        2%{?dist}
 Summary:        Data provider service for Walker launcher
