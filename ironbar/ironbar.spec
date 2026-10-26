@@ -5,7 +5,7 @@
 Name:           ironbar
 Version:        0.19.0
 %forgemeta
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Customizable GTK4 bar for Wayland compositors
 
 License:        MIT
@@ -37,7 +37,7 @@ music, and more with CSS styling.
 %autosetup -n %{name}-%{version}
 
 %build
-cargo build --release
+cargo build --release --locked
 
 %install
 install -Dm755 target/release/ironbar %{buildroot}%{_bindir}/ironbar
@@ -48,6 +48,9 @@ install -Dm755 target/release/ironbar %{buildroot}%{_bindir}/ironbar
 %{_bindir}/ironbar
 
 %changelog
+* Sun Oct 25 2026 Washkinazy <noreply@github.com> - 0.19.0-2
+- Require the upstream Cargo lockfile when building
+
 * Mon May 18 2026 Automated Update <noreply@github.com> - 0.19.0-1
 - Update to 0.19.0
 

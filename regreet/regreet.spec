@@ -5,7 +5,7 @@
 Name:           regreet
 Version:        0.5.0
 %forgemeta
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Clean and customizable greeter for greetd
 
 License:        GPL-3.0-or-later
@@ -33,7 +33,7 @@ GTK-based greeter for greetd with session selection and user management.
 
 %build
 # Build with online access to fetch dependencies from crates.io
-cargo build --release
+cargo build --release --locked
 
 %install
 install -Dm755 target/release/regreet %{buildroot}%{_bindir}/regreet
@@ -56,6 +56,9 @@ install -Dm644 %{SOURCE2} %{buildroot}%{_tmpfilesdir}/regreet.conf
 %{_tmpfilesdir}/regreet.conf
 
 %changelog
+* Sun Oct 25 2026 Washkinazy <noreply@github.com> - 0.5.0-2
+- Require the upstream Cargo lockfile when building
+
 * Sat Jul 18 2026 Automated Update <noreply@github.com> - 0.5.0-1
 - Update to 0.5.0
 
@@ -65,12 +68,12 @@ install -Dm644 %{SOURCE2} %{buildroot}%{_tmpfilesdir}/regreet.conf
 * Sun Apr 12 2026 Automated Update <noreply@github.com> - 0.3.0-1
 - Update to 0.3.0
 
+* Fri Oct 31 2025 Automated Update <noreply@github.com> - 0.2.0-1
+- Update to 0.2.0
+
 * Tue Nov 05 2024 Washkinazy <noreply@github.com> - 0.2.0-2
 - Fix tmpfiles configuration to use 'greetd' user (Fedora convention) instead of 'greeter' (Arch convention)
 - Add Requires(pre) for greetd to ensure user exists before package installation
-
-* Fri Oct 31 2025 Automated Update <noreply@github.com> - 0.2.0-1
-- Update to 0.2.0
 
 * Sun Oct 27 2024 Your Name <your.email@example.com> - 0.2.0-1
 - Initial package for version 0.2.0

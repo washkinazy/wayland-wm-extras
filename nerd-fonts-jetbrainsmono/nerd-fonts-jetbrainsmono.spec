@@ -3,7 +3,7 @@
 
 Name:           nerd-fonts-jetbrainsmono
 Version:        3.5.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        JetBrains Mono font patched with programming glyphs from Nerd Fonts
 
 BuildArch:      noarch
@@ -25,8 +25,14 @@ JetBrains Mono monospaced font patched with Nerd Fonts icon glyphs.
 %install
 # Install fonts
 install -d %{buildroot}%{_datadir}/fonts/%{name}
-install -m 0644 *.ttf %{buildroot}%{_datadir}/fonts/%{name}/ || true
-install -m 0644 *.otf %{buildroot}%{_datadir}/fonts/%{name}/ || true
+# Accept either format, but never produce an empty font package.
+found=0
+for font in *.ttf *.otf; do
+    [ -f "$font" ] || continue
+    install -m 0644 "$font" %{buildroot}%{_datadir}/fonts/%{name}/
+    found=1
+done
+[ "$found" -eq 1 ]
 
 %post
 /usr/bin/fc-cache -f %{_datadir}/fonts/%{name} &>/dev/null || :
@@ -38,6 +44,9 @@ install -m 0644 *.otf %{buildroot}%{_datadir}/fonts/%{name}/ || true
 %{_datadir}/fonts/%{name}/
 
 %changelog
+* Sun Oct 25 2026 Washkinazy <noreply@github.com> - 3.5.1-2
+- Require at least one font file and report installation failures
+
 * Sat Aug 22 2026 Automated Update <noreply@github.com> - 3.5.1-1
 - Update to 3.5.1
 

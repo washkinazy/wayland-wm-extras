@@ -1,6 +1,6 @@
 {
   "name": "Fedora RPM Packaging",
-  "image": "registry.fedoraproject.org/fedora:42",
+  "image": "registry.fedoraproject.org/fedora:44",
 
   "features": {
     "ghcr.io/devcontainers/features/common-utils:2": {

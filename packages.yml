@@ -84,7 +84,13 @@ packages:
     spec_dir: xone
     track: master
 
+  # Firmware payloads change independently of driver commits.
   - name: xone-firmware
     repo: dlundqvist/xone
     spec_dir: xone-firmware
-    track: master
+    update: false
+
+  - name: gtklock-meta
+    repo: jovanlanik/gtklock
+    spec_dir: gtklock-meta
+    update: false

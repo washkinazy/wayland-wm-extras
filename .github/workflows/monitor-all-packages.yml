@@ -2,56 +2,40 @@ name: Monitor All Packages
 
 on:
   schedule:
-    # Run daily at midnight UTC
     - cron: '0 0 * * *'
   workflow_dispatch:
-    # Allow manual triggering
     inputs:
       force_update:
-        description: 'Force update even if versions match'
-        required: false
+        description: 'Rebuild unchanged revisions by incrementing Release'
         type: boolean
         default: false
 
+permissions:
+  contents: read
+
 jobs:
   load-config:
-    name: Load Package Configuration
     runs-on: ubuntu-latest
+    container: registry.fedoraproject.org/fedora:44
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      matrix: ${{ steps.config.outputs.matrix }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install yq
-        run: |
-          sudo wget -qO /usr/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          sudo chmod +x /usr/bin/yq
-
-      - name: Load packages from config
-        id: set-matrix
-        run: |
-          # Convert packages.yml to JSON matrix format
-          PACKAGES=$(yq eval -o=json '.packages' packages.yml | jq -c .)
-          echo "matrix=$PACKAGES" >> $GITHUB_OUTPUT
-          echo "Loaded packages:"
-          echo "$PACKAGES" | jq .
-
+      - run: dnf install -y git python3-rpm python3-pyyaml
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - id: config
+        run: python3 .github/scripts/packages.py matrix
   update-packages:
-    name: Update ${{ matrix.package.name }}
     needs: load-config
-    # Don't fail-fast: continue updating other packages even if one fails
-    # Run sequentially (max-parallel: 1) to avoid merge conflicts when multiple PRs merge simultaneously
     strategy:
       fail-fast: false
-      max-parallel: 1
+      max-parallel: 2
       matrix:
-        package: ${{ fromJson(needs.load-config.outputs.matrix) }}
+        package: ${{ fromJSON(needs.load-config.outputs.matrix) }}
     uses: ./.github/workflows/update-package.yml
     with:
       package_name: ${{ matrix.package.name }}
-      upstream_repo: ${{ matrix.package.repo }}
-      spec_dir: ${{ matrix.package.spec_dir }}
-      track_branch: ${{ matrix.package.track || '' }}
+      force_update: ${{ inputs.force_update || false }}
     secrets:
       PAT_TOKEN: ${{ secrets.PAT_TOKEN }}

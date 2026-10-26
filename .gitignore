@@ -41,12 +41,10 @@ fedora-review.log
 *.src.rpm
 
 # Cargo/Rust artifacts (for rust2rpm)
-Cargo.lock
 target/
 */target/
 
 # Go artifacts (for golang packages)
-go.sum
 vendor/
 */vendor/
 
@@ -78,3 +76,6 @@ swayosd/SwayOSD-*
 swayosd/SwayOSD-*.tar.gz
 **/SwayOSD-*.tar.gz
 # NOTE: swayosd/*-vendor.tar.xz is COMMITTED (not ignored)
+
+.build/
+__pycache__/
