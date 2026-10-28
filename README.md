@@ -8,8 +8,7 @@ Packages are published through the `washkinazy/wayland-wm-extras` COPR.
 [packages.yml](packages.yml) is the authoritative package inventory. Each entry
 has a matching directory and spec file. Run `just list` for package names.
 Entries with `update: false` are maintained manually: `gtklock-meta` has no
-upstream payload, and `xone-firmware` changes only when its firmware payloads
-change, independently of the driver repository.
+upstream payload.
 
 ```bash
 sudo dnf copr enable washkinazy/wayland-wm-extras
@@ -39,7 +38,7 @@ package and serializes overlapping updates to that package. It never merges PRs.
 Pull requests run:
 
 - Inventory consistency checks, regression tests, ShellCheck, and RPM parsing.
-- Mock builds of changed packages on Fedora 43 and 44. Changes to shared build
+- Mock builds of changed packages on Fedora 44. Changes to shared build
   tooling, tests, or workflows rebuild all packages.
 - An aggregate **Package checks** status, suitable for a required check.
 
@@ -68,12 +67,12 @@ and packaging tools. It does not change the host's global Mock networking policy
 Build networking is enabled for the individual Mock invocation.
 
 ```bash
-just mock elephant 43  # Isolated Mock build for one Fedora version
+just mock elephant    # Isolated Mock build for Fedora 44
 just build walker     # Local rpmbuild; install BuildRequires yourself first
 just review gtklock
 just build-all 44
-just mock-all walker  # Fedora 43 and 44
-just build-matrix     # Every package on both versions
+just mock-all walker  # Fedora 44
+just build-matrix     # Every package on Fedora 44
 just clean            # Remove only this repo's .build directory
 ```
 
