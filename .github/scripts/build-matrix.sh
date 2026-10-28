@@ -2,7 +2,7 @@
 set -euo pipefail
 package=${1:?Missing package or all}
 shift
-if [ "$#" -eq 0 ]; then set -- 43 44; fi
+if [ "$#" -eq 0 ]; then set -- 44; fi
 if [ "$package" = all ]; then
     names=$(python3 .github/scripts/packages.py names)
     mapfile -t packages <<< "$names"

@@ -14,9 +14,6 @@ setup version="44":
     distrobox create --name "fedora-packaging-$1" --image "registry.fedoraproject.org/fedora:$1"
     distrobox enter "fedora-packaging-$1" -- bash .devcontainer/setup.sh
 
-setup-43:
-    just setup 43
-
 setup-44:
     just setup 44
 
@@ -47,10 +44,10 @@ build-all fedora_version="44":
     bash .github/scripts/build-matrix.sh all "$1"
 
 mock-all package:
-    bash .github/scripts/build-matrix.sh "$1" 43 44
+    bash .github/scripts/build-matrix.sh "$1"
 
 build-matrix:
-    bash .github/scripts/build-matrix.sh all 43 44
+    bash .github/scripts/build-matrix.sh all
 
 check:
     #!/usr/bin/env bash

@@ -31,6 +31,15 @@ class Updates(unittest.TestCase):
     def copy(self, name):
         self.path.write_text((ROOT / name / f'{name}.spec').read_text())
 
+    def snapshot(self):
+        # Synthetic snapshot fixture keeps updater coverage independent of inventory.
+        self.path.write_text(
+            '%global commit f2aa9fe01103d7600553b505b298ff0bd47ff280\n'
+            '%global shortcommit f2aa9fe\n'
+            'Name: package\nVersion: 0.5.8^gitf2aa9fe\nRelease: 1%{?dist}\n'
+            '%changelog\n'
+        )
+
     def test_direct_source_url_preserved(self):
         for name in ('waypaper', 'python-screeninfo', 'python-imageio-ffmpeg', 'nerd-fonts-firacode'):
             with self.subTest(name=name):
@@ -64,7 +73,7 @@ class Updates(unittest.TestCase):
         self.assertIn('2.7-2\n- Rebuild', self.path.read_text())
 
     def test_commit_snapshot_and_identity(self):
-        self.copy('xone')
+        self.snapshot()
         sha = 'a' * 40
         version = '0.5.8^20261025000000.gitaaaaaaa'
         packages.update_spec(self.path, version, sha, 'commit')
@@ -74,9 +83,9 @@ class Updates(unittest.TestCase):
 
     def test_inventory_covers_every_spec_and_manual_packages(self):
         data = packages.inventory()
-        self.assertTrue({'ashell', 'ironbar'} <= {p['name'] for p in data})
+        self.assertEqual({p.parent.name for p in ROOT.glob('*/*.spec')}, {p['name'] for p in data})
         manual = {p['name'] for p in data if not p.get('update', True)}
-        self.assertEqual({'xone-firmware', 'gtklock-meta'}, manual)
+        self.assertEqual({'gtklock-meta'}, manual)
 
     def test_missing_changelog_is_atomic(self):
         self.copy('waypaper')
@@ -87,7 +96,7 @@ class Updates(unittest.TestCase):
         self.assertEqual(original, self.path.read_text())
 
     def test_unchanged_commit_does_not_rewrite_snapshot_version(self):
-        self.copy('xone')
+        self.snapshot()
         original = self.path.read_text()
         package = {'name': 'package', 'spec_dir': '.', 'repo': 'owner/repo', 'track': 'master'}
         with patch.object(packages, 'ROOT', self.path.parent), patch.object(packages, 'api', return_value={'sha': 'f2aa9fe01103d7600553b505b298ff0bd47ff280'}), patch.object(packages, 'output') as output:
@@ -193,9 +202,9 @@ class ValidationAndBuilds(unittest.TestCase):
             scripts.mkdir(parents=True)
             (scripts / 'packages.py').write_text('print("first\\nsecond")\n')
             (scripts / 'build-package.sh').write_text('echo "$2/$3" >> calls\n[ "$2" != first ]\n')
-            result = subprocess.run(['bash', str(ROOT / '.github/scripts/build-matrix.sh'), 'all', '43', '44'], cwd=root, capture_output=True, text=True)
+            result = subprocess.run(['bash', str(ROOT / '.github/scripts/build-matrix.sh'), 'all'], cwd=root, capture_output=True, text=True)
             self.assertEqual(1, result.returncode)
-            self.assertEqual(['first/43', 'second/43', 'first/44', 'second/44'], (root / 'calls').read_text().splitlines())
+            self.assertEqual(['first/44', 'second/44'], (root / 'calls').read_text().splitlines())
             self.assertIn('first/fedora-44', result.stderr)
 
 

@@ -1,8 +1,4 @@
 packages:
-  - name: ashell
-    repo: MalpenZibo/ashell
-    spec_dir: ashell
-
   - name: elephant
     repo: abenz1267/elephant
     spec_dir: elephant
@@ -71,24 +67,9 @@ packages:
     repo: ryanoasis/nerd-fonts
     spec_dir: nerd-fonts-jetbrainsmono
 
-  - name: ironbar
-    repo: JakeStanger/ironbar
-    spec_dir: ironbar
-
   - name: nerd-fonts-cascadiacode
     repo: ryanoasis/nerd-fonts
     spec_dir: nerd-fonts-cascadiacode
-
-  - name: xone
-    repo: dlundqvist/xone
-    spec_dir: xone
-    track: master
-
-  # Firmware payloads change independently of driver commits.
-  - name: xone-firmware
-    repo: dlundqvist/xone
-    spec_dir: xone-firmware
-    update: false
 
   - name: gtklock-meta
     repo: jovanlanik/gtklock

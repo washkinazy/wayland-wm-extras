@@ -31,7 +31,7 @@ clipboard history, and Bluetooth devices.
 %autosetup -n %{name}-%{version}
 
 %build
-# Fedora 43/44's Go is older than upstream's go.mod requirement. Use one
+# Fedora 44's Go is older than upstream's go.mod requirement. Use one
 # pinned toolchain for the executable and every plugin (requires network).
 export GOTOOLCHAIN=%{go_toolchain}
 export GOFLAGS=-mod=readonly
