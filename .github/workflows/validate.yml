@@ -2,8 +2,6 @@ name: Validate Packages
 
 on:
   pull_request:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -41,7 +39,7 @@ jobs:
       - name: Select changed packages
         id: changed
         env:
-          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          BASE: ${{ github.event.pull_request.base.sha }}
         run: |
           git config --global --add safe.directory "$PWD"
           if [ -z "$BASE" ] || ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then
