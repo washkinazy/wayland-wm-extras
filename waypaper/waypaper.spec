@@ -2,7 +2,7 @@
 %global forgeurl https://github.com/anufrievroman/waypaper
 
 Name:           waypaper
-Version:        2.7
+Version:        2.9
 Release:        1%{?dist}
 Summary:        GUI wallpaper setter for Wayland
 
@@ -44,5 +44,8 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_datadir}/man/man1/waypaper.1.*
 
 %changelog
+* Wed Oct 28 2026 Automated Update <noreply@github.com> - 2.9-1
+- Update to 2.9
+
 * Tue Nov 05 2024 Automated Update <noreply@github.com> - 2.7-1
 - Initial package for version 2.7
