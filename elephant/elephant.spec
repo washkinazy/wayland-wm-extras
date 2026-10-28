@@ -1,10 +1,11 @@
 %global debug_package %{nil}
 %global forgeurl https://github.com/abenz1267/elephant
+%global go_toolchain go1.27.1
 
 Name:           elephant
 Version:        2.22.1
 %forgemeta
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Data provider service for Walker launcher
 
 License:        GPL-3.0-or-later
@@ -12,6 +13,8 @@ URL:            %{forgeurl}
 Source0:        %{forgesource}
 
 BuildRequires:  golang >= 1.21
+BuildRequires:  gcc
+BuildRequires:  make
 BuildRequires:  git-core
 BuildRequires:  protobuf-compiler
 BuildRequires:  systemd-rpm-macros
@@ -28,6 +31,11 @@ clipboard history, and Bluetooth devices.
 %autosetup -n %{name}-%{version}
 
 %build
+# Fedora 43/44's Go is older than upstream's go.mod requirement. Use one
+# pinned toolchain for the executable and every plugin (requires network).
+export GOTOOLCHAIN=%{go_toolchain}
+export GOFLAGS=-mod=readonly
+export CGO_ENABLED=1
 # Build main binary
 cd cmd/elephant
 go build -buildvcs=false -trimpath -mod=readonly -o elephant
@@ -61,6 +69,10 @@ install -Dm755 _build/providers/*.so %{buildroot}%{_sysconfdir}/xdg/elephant/pro
 %{_sysconfdir}/xdg/elephant/providers/*.so
 
 %changelog
+* Tue Oct 27 2026 Washkinazy <noreply@github.com> - 2.22.1-3
+- Pin Go 1.27.1 for builds on Fedora 43 and 44
+- Declare the C compiler and make required by provider plugins
+
 * Sun Oct 25 2026 Washkinazy <noreply@github.com> - 2.22.0-2
 - Require read-only Go module resolution
 
