@@ -1,8 +1,9 @@
+%global tag v5.0.0
 %global debug_package %{nil}
 %global forgeurl https://github.com/jovanlanik/gtklock
 
 Name:           gtklock
-Version:        4.0.0
+Version:        5.0.0
 %forgemeta
 Release:        1%{?dist}
 Summary:        GTK-based lock screen for Wayland
@@ -46,6 +47,9 @@ install -dm0755 %{buildroot}%{_libdir}/%{name}
 %doc README.md
 
 %changelog
+* Wed Oct 28 2026 Automated Update <noreply@github.com> - 5.0.0-1
+- Update to 5.0.0
+
 * Fri Oct 31 2025 Automated Update <noreply@github.com> - 4.0.0-1
 - Update to 4.0.0
 
