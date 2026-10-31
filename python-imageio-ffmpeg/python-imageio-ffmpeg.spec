@@ -2,8 +2,8 @@
 %global forgeurl https://github.com/imageio/imageio-ffmpeg
 
 Name:           python-imageio-ffmpeg
-Version:        0.6.0
-Release:        2%{?dist}
+Version:        0.7.0
+Release:        1%{?dist}
 Summary:        FFMPEG wrapper for Python
 
 License:        BSD-2-Clause
@@ -45,6 +45,9 @@ Requires:       /usr/bin/ffmpeg
 %license LICENSE
 
 %changelog
+* Sat Oct 31 2026 Automated Update <noreply@github.com> - 0.7.0-1
+- Update to 0.7.0
+
 * Sun Oct 25 2026 Washkinazy <noreply@github.com> - 0.6.0-2
 - Build with pyproject macros and check imports
 
