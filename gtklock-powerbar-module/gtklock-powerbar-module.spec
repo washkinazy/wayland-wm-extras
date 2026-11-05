@@ -1,9 +1,9 @@
-%global tag v5.0.0
+%global tag v5.0.1
 %global debug_package %{nil}
 %global forgeurl https://github.com/jovanlanik/gtklock-powerbar-module
 
 Name:           gtklock-powerbar-module
-Version:        5.0.0
+Version:        5.0.1
 %forgemeta
 Release:        1%{?dist}
 Summary:        Gtklock module for power controls
@@ -39,6 +39,9 @@ Supplements:    gtklock%{?_isa}
 %doc README.md
 
 %changelog
+* Thu Nov 05 2026 Automated Update <noreply@github.com> - 5.0.1-1
+- Update to 5.0.1
+
 * Wed Oct 28 2026 Automated Update <noreply@github.com> - 5.0.0-1
 - Update to 5.0.0
 
