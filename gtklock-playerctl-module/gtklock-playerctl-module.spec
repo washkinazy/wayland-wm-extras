@@ -1,9 +1,9 @@
-%global tag v5.0.0
+%global tag v5.0.2
 %global debug_package %{nil}
 %global forgeurl https://github.com/jovanlanik/gtklock-playerctl-module
 
 Name:           gtklock-playerctl-module
-Version:        5.0.0
+Version:        5.0.2
 %forgemeta
 Release:        1%{?dist}
 Summary:        Gtklock module for media player controls
@@ -42,6 +42,9 @@ Supplements:    gtklock%{?_isa}
 %doc README.md
 
 %changelog
+* Thu Nov 05 2026 Automated Update <noreply@github.com> - 5.0.2-1
+- Update to 5.0.2
+
 * Wed Oct 28 2026 Automated Update <noreply@github.com> - 5.0.0-1
 - Update to 5.0.0
 
