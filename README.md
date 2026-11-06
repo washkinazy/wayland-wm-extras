@@ -1,3 +1,5 @@
+**Most of these are now available in a more centralized repo or are no longer used by me**
+
 # wayland-wm-extras
 
 RPM packaging for fonts, tools, and utilities used on Fedora Wayland systems.
