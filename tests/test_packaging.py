@@ -1,5 +1,7 @@
 import importlib.util
+import json
 import os
+import re
 import shutil
 import urllib.error
 from pathlib import Path
@@ -66,11 +68,13 @@ class Updates(unittest.TestCase):
     def test_idempotency_and_force_release(self):
         self.copy('waypaper')
         original = self.path.read_text()
-        self.assertFalse(packages.update_spec(self.path, '2.7', '2.7'))
+        version = packages.field(original, 'Version')
+        release = int(packages.field(original, 'Release').split('%')[0]) + 1
+        self.assertFalse(packages.update_spec(self.path, version, version))
         self.assertEqual(original, self.path.read_text())
-        self.assertTrue(packages.update_spec(self.path, '2.7', '2.7', force=True))
-        self.assertEqual('2%{?dist}', packages.field(self.path.read_text(), 'Release'))
-        self.assertIn('2.7-2\n- Rebuild', self.path.read_text())
+        self.assertTrue(packages.update_spec(self.path, version, version, force=True))
+        self.assertEqual(f'{release}%{{?dist}}', packages.field(self.path.read_text(), 'Release'))
+        self.assertIn(f'{version}-{release}\n- Rebuild {version}', self.path.read_text())
 
     def test_commit_snapshot_and_identity(self):
         self.snapshot()
@@ -151,13 +155,73 @@ class Sources(unittest.TestCase):
                     sources.stage(root / 'test.spec', root)
 
 
+class PullRequests(unittest.TestCase):
+    def run_updater(self, number='', lookup_failure=False):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            binaries = root / 'bin'
+            binaries.mkdir()
+            (binaries / 'git').write_text('#!/bin/sh\nexit 0\n')
+            (binaries / 'gh').write_text(
+                '#!/usr/bin/env python3\n'
+                'import json, os, pathlib, sys\n'
+                'args = sys.argv[1:]\n'
+                'record = {"args": args}\n'
+                'for arg in args:\n'
+                '    if arg.startswith("body=@"):\n'
+                '        record["body"] = pathlib.Path(arg[6:]).read_text()\n'
+                'with open("calls", "a") as stream:\n'
+                '    stream.write(json.dumps(record) + "\\n")\n'
+                'if args[:3] == ["api", "--method", "GET"]:\n'
+                '    if os.environ["LOOKUP_FAILURE"] == "1": sys.exit(1)\n'
+                '    print(os.environ["PR_NUMBER"])\n'
+            )
+            for binary in binaries.iterdir():
+                binary.chmod(0o755)
+            env = dict(os.environ, PATH=str(binaries) + ':' + os.environ['PATH'],
+                       PACKAGE='sample', VERSION='2.0', PREVIOUS='1.0',
+                       GITHUB_REPOSITORY='owner/repo', PR_NUMBER=number,
+                       LOOKUP_FAILURE=str(int(lookup_failure)))
+            result = subprocess.run(['bash', str(ROOT / '.github/scripts/open-update-pr.sh')],
+                                    cwd=root, env=env, capture_output=True, text=True)
+            calls = [json.loads(line) for line in (root / 'calls').read_text().splitlines()]
+            return result, calls
+
+    def test_create_and_edit_use_repository_rest_endpoints(self):
+        for number, method, endpoint in [('', 'POST', 'repos/owner/repo/pulls'),
+                                         ('42', 'PATCH', 'repos/owner/repo/pulls/42')]:
+            with self.subTest(method=method):
+                result, calls = self.run_updater(number)
+                self.assertEqual(0, result.returncode, result.stderr)
+                self.assertEqual(2, len(calls))
+                self.assertEqual(['api', '--method', 'GET', 'repos/owner/repo/pulls'], calls[0]['args'][:4])
+                self.assertIn('head=owner:auto-update/sample', calls[0]['args'])
+                self.assertIn('base=main', calls[0]['args'])
+                self.assertIn('state=open', calls[0]['args'])
+                self.assertEqual(['api', '--method', method, endpoint], calls[1]['args'][:4])
+                self.assertIn('title=chore: update sample to 2.0', calls[1]['args'])
+                self.assertTrue(calls[1]['body'].startswith('Updates sample from 1.0 to 2.0.\n\n'))
+                if method == 'POST':
+                    self.assertIn('head=auto-update/sample', calls[1]['args'])
+                    self.assertIn('base=main', calls[1]['args'])
+
+    def test_lookup_failure_does_not_create_duplicate_pr(self):
+        result, calls = self.run_updater(lookup_failure=True)
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual(1, len(calls))
+
+
 class ValidationAndBuilds(unittest.TestCase):
     def test_malformed_spec_rejected_by_real_parser(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / 'bad.spec'
-            path.write_text((ROOT / 'waypaper/waypaper.spec').read_text().replace('Version:        2.7', 'Version:        invalid version'))
-            result = subprocess.run(['bash', str(ROOT / '.github/scripts/validate-spec.sh'), directory, 'bad'], capture_output=True)
+            original = (ROOT / 'waypaper/waypaper.spec').read_text()
+            malformed, count = re.subn(r'^Version:.*$', 'Version:        invalid version', original, flags=re.M)
+            self.assertEqual(1, count)
+            path.write_text(malformed)
+            result = subprocess.run(['bash', str(ROOT / '.github/scripts/validate-spec.sh'), directory, 'bad'], capture_output=True, text=True)
             self.assertNotEqual(0, result.returncode)
+            self.assertIn('error:', result.stderr)
 
     def test_meta_package_without_source_validates(self):
         result = subprocess.run(['bash', str(ROOT / '.github/scripts/validate-spec.sh'), str(ROOT / 'gtklock-meta'), 'gtklock-meta'], capture_output=True)

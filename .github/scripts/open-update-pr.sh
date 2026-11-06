@@ -24,9 +24,14 @@ The Fedora RPM parser and exact source downloads passed. Package builds run in
 PR CI. Review the build results before merging; this workflow never bypasses
 branch protection or merges the PR itself.
 EOF
-number=$(gh pr list --head "$branch" --base main --state open --json number --jq '.[0].number // empty')
+# REST avoids unrelated organization/project GraphQL fields and token scopes.
+repo=${GITHUB_REPOSITORY:?Missing repository}
+number=$(gh api --method GET "repos/$repo/pulls" \
+    -f head="${repo%%/*}:$branch" -f base=main -f state=open --jq '.[0].number // empty')
 if [ -n "$number" ]; then
-    gh pr edit "$number" --title "$title" --body-file "$body"
+    gh api --method PATCH "repos/$repo/pulls/$number" \
+        -f title="$title" -F body=@"$body" --jq .html_url
 else
-    gh pr create --base main --head "$branch" --title "$title" --body-file "$body"
+    gh api --method POST "repos/$repo/pulls" \
+        -f base=main -f head="$branch" -f title="$title" -F body=@"$body" --jq .html_url
 fi
